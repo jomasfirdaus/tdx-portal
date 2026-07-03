@@ -42,8 +42,8 @@ if not SECRET_KEY:
             "and no secret key."
         )
 
-ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost")
-CSRF_TRUSTED_ORIGINS = env_list("DJANGO_CSRF_TRUSTED_ORIGINS", "")
+ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "demo-tdx.tualiqui.com")
+CSRF_TRUSTED_ORIGINS = env_list("DJANGO_CSRF_TRUSTED_ORIGINS", "https://demo-tdx.tualiqui.com")
 
 # --------------------------------------------------------------------------
 # Applications
@@ -117,8 +117,8 @@ if DB_ENGINE == "mysql":
             "ENGINE": "django.db.backends.mysql",
             "NAME": os.environ.get("DB_NAME", "tdx_db"),
             "USER": os.environ.get("DB_USER", "tdx_user"),
-            "PASSWORD": os.environ.get("DB_PASSWORD", "£XS2|rc<8Fr7"),
-            "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
+            "PASSWORD": os.environ.get("DB_PASSWORD", "zsHjtIM0bSwNbAFR"),
+            "HOST": os.environ.get("DB_HOST", "srv-captain--mysql-8-db"),
             "PORT": os.environ.get("DB_PORT", "3306"),
             "CONN_MAX_AGE": 60,
             "CONN_HEALTH_CHECKS": True,
