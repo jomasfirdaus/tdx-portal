@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load tdx_extras %}
+{% block title %}{% t "nav.vision_mission" %} — {{ profile.org_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <div class="breadcrumb"><a href="{% url 'core:home' %}">{% t "nav.home" %}</a> / {% t "nav.vision_mission" %}</div>
+    <h1>{% t "nav.vision_mission" %}</h1>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container grid grid-2">
+    <div class="card">
+      <div class="card-icon">{% icon "eye" "icon-lg" %}</div>
+      <h2>{% t "vm.vision_label" %}</h2>
+      <p class="mb-0">{% tf profile "vision" %}</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">{% icon "arrow-right" "icon-lg" %}</div>
+      <h2>{% t "vm.mission_label" %}</h2>
+      <p class="mb-0">{% tf profile "mission" %}</p>
+    </div>
+  </div>
+</section>
+
+{% if values %}
+<section class="section section--alt">
+  <div class="container">
+    <div class="section-head section-head--center">
+      <div class="eyebrow">{% t "vm.values_title" %}</div>
+      <h2>{% t "vm.values_title" %}</h2>
+    </div>
+    <div class="grid grid-4">
+      {% for v in values %}
+      <div class="card">
+        <div class="card-icon">{% icon v.icon|default:"heart" "icon-lg" %}</div>
+        <h3>{% tf v "name" %}</h3>
+        <p class="mb-0">{% tf v "description" %}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

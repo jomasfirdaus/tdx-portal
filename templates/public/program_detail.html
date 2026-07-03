@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load tdx_extras %}
+{% block title %}{% tf program "title" %} — {{ site_profile.org_name }}{% endblock %}
+{% block meta_description %}{% tf program "summary" %}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <div class="breadcrumb"><a href="{% url 'core:home' %}">{% t "nav.home" %}</a> / <a href="{% url 'programs:list' %}">{% t "nav.programs" %}</a> / {% tf program "title" %}</div>
+    <span class="badge badge-{{ program.status }}">{% t "programs.status."|add:program.status %}</span>
+    <h1>{% tf program "title" %}</h1>
+    <div class="media-meta">
+      {% if program.location %}{% icon "map-pin" "icon-sm" %} {{ program.location }}{% endif %}
+      {% if program.start_date %}&nbsp;&middot;&nbsp;{% icon "calendar" "icon-sm" %} {{ program.start_date|date:"d M Y" }}{% if program.end_date %} &ndash; {{ program.end_date|date:"d M Y" }}{% endif %}{% endif %}
+    </div>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container" style="max-width:820px;">
+    {% if program.cover_image %}<img src="{{ program.cover_image.url }}" alt="{% tf program 'title' %}" style="border-radius:var(--radius-lg); margin-bottom:32px;">{% endif %}
+    <div style="white-space:pre-line;">{% tf program "description" %}</div>
+    <a href="{% url 'programs:list' %}" class="btn btn-ghost" style="margin-top:20px;">&larr; {% t "common.back" %}</a>
+  </div>
+</section>
+
+{% if related %}
+<section class="section section--alt">
+  <div class="container">
+    <h2>{% t "home.programs_title" %}</h2>
+    <div class="grid grid-3">
+      {% for p in related %}
+      <a href="{{ p.get_absolute_url }}" class="media-card">
+        <div class="media-thumb" {% if p.cover_image %}style="background-image:url('{{ p.cover_image.url }}')"{% endif %}>
+          {% if not p.cover_image %}<span class="placeholder-icon">{% icon "image" "icon-xl" %}</span>{% endif %}
+        </div>
+        <div class="media-body"><h3>{% tf p "title" %}</h3><p>{% tf p "summary" %}</p></div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

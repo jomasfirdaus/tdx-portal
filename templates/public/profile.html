@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load tdx_extras %}
+{% block title %}{% t "profile.title" %} — {{ profile.org_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <div class="breadcrumb"><a href="{% url 'core:home' %}">{% t "nav.home" %}</a> / {% t "nav.profile" %}</div>
+    <h1>{% t "profile.title" %}</h1>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div class="grid grid-2" style="align-items:start;">
+      <div>
+        <h2>{{ profile.org_name }}</h2>
+        <p>{% tf profile "about" %}</p>
+        <p>{% tf profile "about_secondary" %}</p>
+      </div>
+      <div class="card">
+        <h3>{% t "vm.vision_label" %}</h3>
+        <p>{% tf profile "vision" %}</p>
+        <h3>{% t "vm.mission_label" %}</h3>
+        <p class="mb-0">{% tf profile "mission" %}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if governance %}
+<section class="section section--alt">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">{% t "structure.board" %}</div>
+      <h2>{% t "profile.governance_title" %}</h2>
+    </div>
+    <div class="grid grid-2">
+      {% for dept in governance %}
+      <div class="dept-card">
+        <span class="dept-pill">{{ dept.get_category_display }}</span>
+        <h4>{% tf dept "name" %}</h4>
+        <p class="mb-0">{% tf dept "description" %}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if org_tree %}
+<section class="section">
+  <div class="container">
+    <div class="section-head section-head--center">
+      <div class="eyebrow">{% t "profile.org_structure_title" %}</div>
+      <h2>{% t "profile.org_structure_title" %}</h2>
+    </div>
+    <div class="org-tree">
+      {% for root in org_tree %}
+        <div class="org-node root">{% tf root "name" %}</div>
+        {% if root.children.all %}
+          <div class="org-connector"></div>
+          <div class="org-children">
+            {% for child in root.children.all %}
+              <div class="org-child-col">
+                <div class="org-node">{% tf child "name" %}</div>
+                {% if child.children.all %}
+                  <div class="org-connector"></div>
+                  <div class="org-children">
+                    {% for grand in child.children.all %}
+                      <div class="org-node" style="font-size:0.85rem;">{% tf grand "name" %}</div>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

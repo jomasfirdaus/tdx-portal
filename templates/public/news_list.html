@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load tdx_extras %}
+{% block title %}{% t "news.title" %} — {{ site_profile.org_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <div class="breadcrumb"><a href="{% url 'core:home' %}">{% t "nav.home" %}</a> / {% t "nav.news" %}</div>
+    <h1>{% t "news.title" %}</h1>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div class="filter-row">
+      <a href="{% url 'news:list' %}" class="filter-pill {% if not active_category %}active{% endif %}">{% t "home.view_all" %}</a>
+      {% for c in categories %}
+        <a href="?category={{ c.slug }}" class="filter-pill {% if active_category == c.slug %}active{% endif %}">{% tf c "name" %}</a>
+      {% endfor %}
+      <form class="search-box" method="get">
+        <input type="text" name="q" value="{{ q }}" class="field-input" placeholder="{% t 'common.search' %}...">
+        <button class="btn btn-outline-dark btn-sm" type="submit">{% icon "search" "icon-sm" %}</button>
+      </form>
+    </div>
+
+    {% if page_obj.object_list %}
+    <div class="grid grid-3">
+      {% for n in page_obj %}
+      <a href="{{ n.get_absolute_url }}" class="media-card">
+        <div class="media-thumb" {% if n.cover_image %}style="background-image:url('{{ n.cover_image.url }}')"{% endif %}>
+          {% if not n.cover_image %}<span class="placeholder-icon">{% icon "image" "icon-xl" %}</span>{% endif %}
+        </div>
+        <div class="media-body">
+          <div class="media-meta">{% icon "calendar" "icon-sm" %} {{ n.published_at|date:"d M Y" }}{% if n.category %} &middot; {% tf n.category "name" %}{% endif %}</div>
+          <h3>{% tf n "title" %}</h3>
+          <p>{% tf n "excerpt" %}</p>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% include "partials/pagination.html" %}
+    {% else %}
+    <div class="empty-state">{% icon "clipboard" "icon-xl" %}<p>{% t "news.empty" %}</p></div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

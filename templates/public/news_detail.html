@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load tdx_extras %}
+{% block title %}{% tf post "title" %} — {{ site_profile.org_name }}{% endblock %}
+{% block meta_description %}{% tf post "excerpt" %}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <div class="breadcrumb"><a href="{% url 'core:home' %}">{% t "nav.home" %}</a> / <a href="{% url 'news:list' %}">{% t "nav.news" %}</a> / {% tf post "title" %}</div>
+    <h1>{% tf post "title" %}</h1>
+    <div class="media-meta">
+      {% icon "calendar" "icon-sm" %} {% t "news.published_on" %} {{ post.published_at|date:"d M Y" }}
+      {% if post.category %}&middot; {% tf post.category "name" %}{% endif %}
+    </div>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container" style="max-width:780px;">
+    {% if post.cover_image %}<img src="{{ post.cover_image.url }}" alt="{% tf post 'title' %}" style="border-radius:var(--radius-lg); margin-bottom:32px;">{% endif %}
+    {# Content is sanitized with bleach at save-time (news/models.py) to a strict allow-list, so it is safe to render as HTML here. #}
+    <div class="news-body">{% tf_safe post "content" %}</div>
+    <a href="{% url 'news:list' %}" class="btn btn-ghost" style="margin-top:24px;">&larr; {% t "common.back" %}</a>
+  </div>
+</section>
+
+{% if related %}
+<section class="section section--alt">
+  <div class="container">
+    <h2>{% t "home.news_title" %}</h2>
+    <div class="grid grid-3">
+      {% for n in related %}
+      <a href="{{ n.get_absolute_url }}" class="media-card">
+        <div class="media-thumb" {% if n.cover_image %}style="background-image:url('{{ n.cover_image.url }}')"{% endif %}>
+          {% if not n.cover_image %}<span class="placeholder-icon">{% icon "image" "icon-xl" %}</span>{% endif %}
+        </div>
+        <div class="media-body"><h3>{% tf n "title" %}</h3><p>{% tf n "excerpt" %}</p></div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

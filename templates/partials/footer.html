@@ -1,0 +1,46 @@
+{% load tdx_extras %}
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h4>{{ site_profile.org_name }}</h4>
+        <p>{% tf site_profile "tagline" %}</p>
+        <div class="social-row">
+          {% if site_profile.facebook_url %}<a href="{{ site_profile.facebook_url }}" aria-label="Facebook" target="_blank" rel="noopener noreferrer">{% icon "facebook" %}</a>{% endif %}
+          {% if site_profile.instagram_url %}<a href="{{ site_profile.instagram_url }}" aria-label="Instagram" target="_blank" rel="noopener noreferrer">{% icon "instagram" %}</a>{% endif %}
+          {% if site_profile.linkedin_url %}<a href="{{ site_profile.linkedin_url }}" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">{% icon "linkedin" %}</a>{% endif %}
+          {% if site_profile.youtube_url %}<a href="{{ site_profile.youtube_url }}" aria-label="YouTube" target="_blank" rel="noopener noreferrer">{% icon "youtube" %}</a>{% endif %}
+        </div>
+      </div>
+      <div>
+        <h4>{% t "footer.quicklinks" %}</h4>
+        <ul class="footer-links">
+          <li><a href="{% url 'core:profile' %}">{% t "nav.profile" %}</a></li>
+          <li><a href="{% url 'core:vision_mission' %}">{% t "nav.vision_mission" %}</a></li>
+          <li><a href="{% url 'programs:list' %}">{% t "nav.programs" %}</a></li>
+          <li><a href="{% url 'structure:team' %}">{% t "nav.structure" %}</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>{% t "nav.news" %} &amp; {% t "nav.gallery" %}</h4>
+        <ul class="footer-links">
+          <li><a href="{% url 'news:list' %}">{% t "nav.news" %}</a></li>
+          <li><a href="{% url 'gallery:list' %}">{% t "nav.gallery" %}</a></li>
+          <li><a href="{% url 'contact:contact' %}">{% t "nav.contact" %}</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>{% t "contact.title" %}</h4>
+        <ul class="footer-links">
+          {% if site_profile.address_en %}<li>{% icon "map-pin" "icon icon-sm" %} {% tf site_profile "address" %}</li>{% endif %}
+          {% if site_profile.phone_primary %}<li><a href="tel:{{ site_profile.phone_primary }}">{% icon "phone" "icon icon-sm" %} {{ site_profile.phone_primary }}</a></li>{% endif %}
+          {% if site_profile.email_primary %}<li><a href="mailto:{{ site_profile.email_primary }}">{% icon "mail" "icon icon-sm" %} {{ site_profile.email_primary }}</a></li>{% endif %}
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; {% now "Y" %} {{ site_profile.org_name }}. {% t "footer.rights" %}</span>
+      <a href="{% url 'accounts:login' %}">{% t "nav.staff_login" %}</a>
+    </div>
+  </div>
+</footer>

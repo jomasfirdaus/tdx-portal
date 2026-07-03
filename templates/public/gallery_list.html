@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load tdx_extras %}
+{% block title %}{% t "gallery.title" %} — {{ site_profile.org_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <div class="breadcrumb"><a href="{% url 'core:home' %}">{% t "nav.home" %}</a> / {% t "nav.gallery" %}</div>
+    <h1>{% t "gallery.title" %}</h1>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    {% if page_obj.object_list %}
+    <div class="grid grid-3">
+      {% for album in page_obj %}
+      <a href="{{ album.get_absolute_url }}" class="media-card">
+        <div class="media-thumb" {% if album.cover_image %}style="background-image:url('{{ album.cover_image.url }}')"{% endif %}>
+          {% if not album.cover_image %}<span class="placeholder-icon">{% icon "image" "icon-xl" %}</span>{% endif %}
+        </div>
+        <div class="media-body">
+          <div class="media-meta">{% if album.event_date %}{% icon "calendar" "icon-sm" %} {{ album.event_date|date:"d M Y" }} &middot; {% endif %}{{ album.photo_count }} {% t "gallery.photos_count" %}</div>
+          <h3>{% tf album "title" %}</h3>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% include "partials/pagination.html" %}
+    {% else %}
+    <div class="empty-state">{% icon "image" "icon-xl" %}<p>{% t "gallery.empty" %}</p></div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

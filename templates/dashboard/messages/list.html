@@ -1,0 +1,30 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block dash_title %}Messages{% endblock %}
+{% block dash_heading %}Contact Messages{% endblock %}
+{% block dash_content %}
+<div class="dash-card" style="padding:0;">
+  <table class="dash-table">
+    <thead><tr><th>From</th><th>Email</th><th>Subject</th><th>Date</th><th></th></tr></thead>
+    <tbody>
+    {% for m in page_obj %}
+      <tr>
+        <td>{% if not m.is_read %}<span class="status-dot no"></span>{% endif %}{{ m.name }}</td>
+        <td>{{ m.email }}</td>
+        <td>{{ m.subject|default:"—"|truncatechars:40 }}</td>
+        <td>{{ m.created_at|date:"d M Y H:i" }}</td>
+        <td><a href="{% url 'dashboard:message_detail' m.pk %}" class="btn btn-sm btn-ghost">View</a></td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5" style="text-align:center;color:var(--ink-faint);padding:40px;">No messages yet.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% if page_obj.paginator.num_pages > 1 %}
+<nav class="pagination">
+  {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">&larr;</a>{% endif %}
+  <span class="current">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">&rarr;</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

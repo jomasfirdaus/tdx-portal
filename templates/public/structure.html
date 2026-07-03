@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load tdx_extras %}
+{% block title %}{% t "structure.title" %} — {{ site_profile.org_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <div class="breadcrumb"><a href="{% url 'core:home' %}">{% t "nav.home" %}</a> / {% t "nav.structure" %}</div>
+    <h1>{% t "structure.title" %}</h1>
+  </div>
+</div>
+
+{% if board_members %}
+<section class="section">
+  <div class="container">
+    <div class="section-head"><div class="eyebrow">{% t "structure.board" %}</div><h2>{% t "structure.board" %}</h2></div>
+    <div class="grid grid-4">
+      {% for m in board_members %}
+      <div class="card team-card">
+        {% if m.photo %}<img src="{{ m.photo.url }}" alt="{{ m.full_name }}" class="team-photo">
+        {% else %}<div class="team-photo placeholder">{{ m.full_name|slice:":1" }}</div>{% endif %}
+        <h3>{{ m.full_name }}</h3>
+        <div class="team-role">{% tf m "role_title" %}</div>
+        {% if m.department %}<p class="mb-0">{% tf m.department "name" %}</p>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if leadership %}
+<section class="section section--alt">
+  <div class="container">
+    <div class="section-head"><div class="eyebrow">{% t "structure.leadership" %}</div><h2>{% t "structure.leadership" %}</h2></div>
+    <div class="grid grid-4">
+      {% for m in leadership %}
+      <div class="card team-card">
+        {% if m.photo %}<img src="{{ m.photo.url }}" alt="{{ m.full_name }}" class="team-photo">
+        {% else %}<div class="team-photo placeholder">{{ m.full_name|slice:":1" }}</div>{% endif %}
+        <h3>{{ m.full_name }}</h3>
+        <div class="team-role">{% tf m "role_title" %}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if units %}
+<section class="section">
+  <div class="container">
+    <div class="section-head"><div class="eyebrow">{% t "structure.units" %}</div><h2>{% t "structure.units" %}</h2></div>
+    <div class="grid grid-3">
+      {% for u in units %}
+      <div class="dept-card">
+        <div class="card-icon">{% icon u.icon|default:"settings" "icon-lg" %}</div>
+        <h4>{% tf u "name" %}</h4>
+        <p>{% tf u "description" %}</p>
+        {% if u.members.all %}
+        <ul style="padding-left:0; list-style:none; margin-top:14px;">
+          {% for m in u.members.all %}
+          <li style="font-size:0.85rem; padding:4px 0; border-top:1px solid var(--border-soft);">{{ m.full_name }} &middot; <span style="color:var(--ink-faint);">{% tf m "role_title" %}</span></li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if not board_members and not leadership and not units %}
+<section class="section"><div class="container empty-state">{% icon "users" "icon-xl" %}<p>{% t "programs.empty" %}</p></div></section>
+{% endif %}
+{% endblock %}

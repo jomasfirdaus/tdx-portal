@@ -1,0 +1,55 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load tdx_extras %}
+{% block dash_title %}Overview{% endblock %}
+{% block dash_heading %}Overview{% endblock %}
+
+{% block dash_content %}
+<div class="dash-stat-grid">
+  <div class="dash-stat"><div class="n">{{ stats.programs }}</div><div class="l">Programs</div></div>
+  <div class="dash-stat"><div class="n">{{ stats.news }}</div><div class="l">News Posts</div></div>
+  <div class="dash-stat"><div class="n">{{ stats.team }}</div><div class="l">Team Members</div></div>
+  <div class="dash-stat"><div class="n">{{ stats.albums }}</div><div class="l">Gallery Albums</div></div>
+  <div class="dash-stat"><div class="n">{{ stats.unread_messages }}</div><div class="l">Unread Messages</div></div>
+</div>
+
+<div class="grid grid-2" style="align-items:start;">
+  <div class="dash-card">
+    <div class="dash-toolbar"><h3 class="mb-0">Recent Messages</h3><a href="{% url 'dashboard:message_list' %}" class="btn btn-sm btn-ghost">View all</a></div>
+    {% if recent_messages %}
+    <table class="dash-table">
+      <thead><tr><th>From</th><th>Subject</th><th>Date</th></tr></thead>
+      <tbody>
+      {% for m in recent_messages %}
+        <tr>
+          <td><a href="{% url 'dashboard:message_detail' m.pk %}">{{ m.name }}</a>{% if not m.is_read %} <span class="status-dot no"></span>{% endif %}</td>
+          <td>{{ m.subject|default:"—"|truncatechars:30 }}</td>
+          <td>{{ m.created_at|date:"d M Y" }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}<p class="mb-0" style="color:var(--ink-faint);">No messages yet.</p>{% endif %}
+  </div>
+
+  {% if request.user.is_superadmin %}
+  <div class="dash-card">
+    <div class="dash-toolbar"><h3 class="mb-0">Recent Login Activity</h3><a href="{% url 'dashboard:audit_log' %}" class="btn btn-sm btn-ghost">View all</a></div>
+    {% if recent_logins %}
+    <table class="dash-table">
+      <thead><tr><th>User</th><th>IP</th><th>Status</th><th>Date</th></tr></thead>
+      <tbody>
+      {% for l in recent_logins %}
+        <tr>
+          <td>{{ l.username_attempt }}</td>
+          <td>{{ l.ip_address|default:"—" }}</td>
+          <td><span class="status-dot {% if l.success %}ok{% else %}no{% endif %}"></span>{% if l.success %}Success{% else %}{{ l.reason|default:"Failed" }}{% endif %}</td>
+          <td>{{ l.created_at|date:"d M Y H:i" }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}<p class="mb-0" style="color:var(--ink-faint);">No activity yet.</p>{% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

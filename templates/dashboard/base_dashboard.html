@@ -1,0 +1,69 @@
+{% load static tdx_extras %}<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block dash_title %}Dashboard{% endblock %} — TDx</title>
+<link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+<body>
+<div class="dash-shell">
+  <aside class="dash-sidebar">
+    <div class="dash-brand"><span class="brand-mark">TDx</span> Dashboard</div>
+    <nav class="dash-nav">
+      <a href="{% url 'dashboard:home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">{% icon "dashboard" "icon-sm" %} Overview</a>
+      <a href="{% url 'dashboard:message_list' %}" class="{% if 'message' in request.resolver_match.url_name %}active{% endif %}">{% icon "mail" "icon-sm" %} Messages</a>
+
+      <div class="dash-nav-label">Site Content</div>
+      <a href="{% url 'dashboard:site_profile' %}">{% icon "settings" "icon-sm" %} Site Profile</a>
+      <a href="{% url 'dashboard:service_area_list' %}">{% icon "microscope" "icon-sm" %} Services</a>
+      <a href="{% url 'dashboard:core_value_list' %}">{% icon "heart" "icon-sm" %} Core Values</a>
+      <a href="{% url 'dashboard:statistic_list' %}">{% icon "grid" "icon-sm" %} Statistics</a>
+
+      <div class="dash-nav-label">Team &amp; Structure</div>
+      <a href="{% url 'dashboard:department_list' %}">{% icon "columns" "icon-sm" %} Departments</a>
+      <a href="{% url 'dashboard:team_member_list' %}">{% icon "users" "icon-sm" %} Team Members</a>
+
+      <div class="dash-nav-label">Programs</div>
+      <a href="{% url 'dashboard:program_list' %}">{% icon "clipboard" "icon-sm" %} Programs</a>
+      <a href="{% url 'dashboard:program_category_list' %}">{% icon "grid" "icon-sm" %} Categories</a>
+
+      <div class="dash-nav-label">News</div>
+      <a href="{% url 'dashboard:news_post_list' %}">{% icon "edit" "icon-sm" %} Posts</a>
+      <a href="{% url 'dashboard:news_category_list' %}">{% icon "grid" "icon-sm" %} Categories</a>
+
+      <div class="dash-nav-label">Gallery</div>
+      <a href="{% url 'dashboard:album_list' %}">{% icon "image" "icon-sm" %} Albums</a>
+      <a href="{% url 'dashboard:photo_list' %}">{% icon "image" "icon-sm" %} Photos</a>
+
+      {% if request.user.is_superadmin %}
+      <div class="dash-nav-label">Administration</div>
+      <a href="{% url 'dashboard:staff_list' %}">{% icon "lock" "icon-sm" %} Staff Accounts</a>
+      <a href="{% url 'dashboard:audit_log' %}">{% icon "eye" "icon-sm" %} Audit Log</a>
+      {% endif %}
+
+      <div class="dash-nav-label">Account</div>
+      <a href="{% url 'accounts:password_change' %}">{% icon "lock" "icon-sm" %} Change Password</a>
+      <a href="{% url 'accounts:logout' %}">{% icon "logout" "icon-sm" %} Sign out</a>
+      <a href="{% url 'core:home' %}">{% icon "arrow-right" "icon-sm" %} View website</a>
+    </nav>
+  </aside>
+
+  <div class="dash-main">
+    <div class="dash-topbar">
+      <div>
+        <div class="dash-title">{% block dash_heading %}{% endblock %}</div>
+      </div>
+      <div style="font-size:0.85rem;color:var(--ink-faint);">Signed in as <strong>{{ request.user.username }}</strong> &middot; {{ request.user.get_role_display }}</div>
+    </div>
+
+    {% if messages %}
+      {% for message in messages %}<div class="alert alert-{{ message.tags|default:'info' }}" data-autohide>{{ message }}</div>{% endfor %}
+    {% endif %}
+
+    {% block dash_content %}{% endblock %}
+  </div>
+</div>
+<script src="{% static 'js/main.js' %}"></script>
+{% block dash_extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,77 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load tdx_extras %}
+{% block dash_title %}{% if mode == "create" %}Add{% else %}Edit{% endif %} {{ view.model|default:"" }}{% endblock %}
+{% block dash_heading %}{% if mode == "create" %}Add new record{% else %}Edit record{% endif %}{% endblock %}
+
+{% block dash_content %}
+<div class="dash-card" style="max-width:760px;">
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}<div class="alert alert-error">{{ form.non_field_errors.0 }}</div>{% endif %}
+
+    {% for field_name in base_fields %}
+      {% with field=form|get_field:field_name %}
+      <div class="field-group">
+        <label class="field-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}<div class="field-error">{{ field.errors.0 }}</div>{% endif %}
+        {% if field.help_text %}<div class="field-hint">{{ field.help_text|safe }}</div>{% endif %}
+        {% if field_name == "image" or field_name == "photo" or field_name == "cover_image" or field_name == "logo" or field_name == "favicon" or field_name == "hero_image" or field_name == "avatar" %}
+          {% if field.value %}<div class="field-hint">Current file: {{ field.value }}</div>{% endif %}
+        {% endif %}
+      </div>
+      {% endwith %}
+    {% endfor %}
+
+    {% if lang_fields.en %}
+    <div class="tab-row" data-tab-group="#lang-tabs-panels">
+      <button type="button" class="tab-btn active" data-tab-target="lang-en" data-tab-group="#lang-tabs-panels">English</button>
+      <button type="button" class="tab-btn" data-tab-target="lang-tet" data-tab-group="#lang-tabs-panels">Tetun</button>
+      <button type="button" class="tab-btn" data-tab-target="lang-pt" data-tab-group="#lang-tabs-panels">Português</button>
+    </div>
+    <div id="lang-tabs-panels">
+      <div class="tab-panel active" id="lang-en">
+        {% for field_name in lang_fields.en %}
+          {% with field=form|get_field:field_name %}
+          <div class="field-group">
+            <label class="field-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}<div class="field-error">{{ field.errors.0 }}</div>{% endif %}
+          </div>
+          {% endwith %}
+        {% endfor %}
+      </div>
+      <div class="tab-panel" id="lang-tet">
+        {% for field_name in lang_fields.tet %}
+          {% with field=form|get_field:field_name %}
+          <div class="field-group">
+            <label class="field-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}<div class="field-error">{{ field.errors.0 }}</div>{% endif %}
+          </div>
+          {% endwith %}
+        {% endfor %}
+      </div>
+      <div class="tab-panel" id="lang-pt">
+        {% for field_name in lang_fields.pt %}
+          {% with field=form|get_field:field_name %}
+          <div class="field-group">
+            <label class="field-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}<div class="field-error">{{ field.errors.0 }}</div>{% endif %}
+          </div>
+          {% endwith %}
+        {% endfor %}
+      </div>
+    </div>
+    <p class="field-hint" style="margin:-6px 0 20px;">Tip: only English is required — Tetun/Português can be filled in later, and the site falls back to English automatically until then.</p>
+    {% endif %}
+
+    <div class="flex gap-12">
+      <button type="submit" class="btn btn-primary">Save</button>
+      <a href="{% url 'dashboard:'|add:url_namespace|add:'_list' %}" class="btn btn-ghost">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

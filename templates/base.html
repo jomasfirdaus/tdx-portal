@@ -1,0 +1,36 @@
+{% load static tdx_extras %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}{{ site_profile.org_name }}{% endblock %}</title>
+<meta name="description" content="{% block meta_description %}{% tf site_profile 'tagline' %}{% endblock %}">
+<link rel="icon" href="{% if site_profile.favicon %}{{ site_profile.favicon.url }}{% else %}{% static 'img/favicon.svg' %}{% endif %}">
+<link rel="stylesheet" href="{% static 'css/main.css' %}">
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+<a class="sr-only" href="#main-content" style="position:absolute;left:-9999px;">Skip to content</a>
+
+{% include "partials/navbar.html" %}
+
+<main id="main-content">
+{% if messages %}
+  <div class="container" style="padding-top:22px;">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags|default:'info' }}" data-autohide>{{ message }}</div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+{% block content %}{% endblock %}
+</main>
+
+{% include "partials/footer.html" %}
+
+<div class="lightbox"><button class="lightbox-close" aria-label="Close">&times;</button><img src="" alt=""></div>
+
+<script src="{% static 'js/main.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

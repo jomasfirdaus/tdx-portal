@@ -1,0 +1,46 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load tdx_extras %}
+{% block dash_title %}{{ model_verbose|capfirst }}{% endblock %}
+{% block dash_heading %}{{ model_verbose|capfirst }}{% endblock %}
+
+{% block dash_content %}
+<div class="dash-toolbar">
+  <form method="get" class="search-box" style="margin-left:0;">
+    <input type="text" name="q" value="{{ search_query }}" class="field-input" placeholder="Search...">
+    <button class="btn btn-outline-dark btn-sm" type="submit">{% icon "search" "icon-sm" %}</button>
+  </form>
+  <a href="{% url 'dashboard:'|add:url_namespace|add:'_create' %}" class="btn btn-primary btn-sm">{% icon "plus" "icon-sm" %} Add new</a>
+</div>
+
+<div class="dash-card" style="padding:0;">
+  <table class="dash-table">
+    <thead>
+      <tr>
+        {% for field in list_display %}<th>{{ field|cut:"_"|title }}</th>{% endfor %}
+        <th style="width:120px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for obj in objects %}
+      <tr>
+        {% for field in list_display %}<td>{{ obj|get_attr:field }}</td>{% endfor %}
+        <td class="dash-actions">
+          <a href="{% url 'dashboard:'|add:url_namespace|add:'_update' obj.pk %}" class="btn btn-sm btn-ghost">{% icon "edit" "icon-sm" %}</a>
+          <a href="{% url 'dashboard:'|add:url_namespace|add:'_delete' obj.pk %}" class="btn btn-sm btn-ghost">{% icon "trash" "icon-sm" %}</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="{{ list_display|length|add:1 }}" style="text-align:center;color:var(--ink-faint);padding:40px;">No records yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if is_paginated %}
+<nav class="pagination">
+  {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">&larr;</a>{% endif %}
+  <span class="current">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">&rarr;</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

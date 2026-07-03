@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% load static tdx_extras %}
+{% block title %}{{ profile.org_name }} — {% tf profile "tagline" %}{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <div class="eyebrow">{% t "home.hero_eyebrow" %}</div>
+      <h1>{% tf profile "tagline" %}</h1>
+      <p class="lead">{% tf profile "about" %}</p>
+      <div class="hero-cta">
+        <a href="{% url 'programs:list' %}" class="btn btn-primary">{% t "home.cta_programs" %} {% icon "arrow-right" "icon icon-sm" %}</a>
+        <a href="{% url 'contact:contact' %}" class="btn btn-outline-dark">{% t "home.cta_contact" %}</a>
+      </div>
+      <div class="hero-tags">
+        <span class="hero-tag"><span class="dot"></span> {% t "structure.units" %}</span>
+        <span class="hero-tag"><span class="dot"></span> {% t "home.services_title" %}</span>
+        <span class="hero-tag"><span class="dot"></span> Timor-Leste</span>
+      </div>
+    </div>
+    <div class="hero-media">
+      <div class="hero-card">
+        <svg class="pulse-line" viewBox="0 0 400 64" preserveAspectRatio="none">
+          <path d="M0 32 L60 32 L80 8 L100 56 L120 20 L140 44 L160 32 L400 32" />
+        </svg>
+        <div class="stat-strip">
+          {% for s in stats %}
+          <div class="stat-tag">
+            <span class="stat-value" data-count="{{ s.value }}">{{ s.value }}</span>
+            <span class="stat-label">{% tf s "label" %}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">{% t "home.about_title" %}</div>
+      <h2>{{ profile.org_name }}</h2>
+      <p>{% tf profile "about_secondary" %}</p>
+    </div>
+    <div class="grid grid-4">
+      {% for v in values %}
+      <div class="card">
+        <div class="card-icon">{% icon v.icon|default:"heart" "icon-lg" %}</div>
+        <h3>{% tf v "name" %}</h3>
+        <p>{% tf v "description" %}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section--alt">
+  <div class="container">
+    <div class="section-head section-head--center">
+      <div class="eyebrow">{% t "home.services_title" %}</div>
+      <h2>{% t "home.services_title" %}</h2>
+    </div>
+    <div class="grid grid-3">
+      {% for s in services %}
+      <div class="card">
+        <div class="card-icon">{% icon s.icon|default:"microscope" "icon-lg" %}</div>
+        <h3>{% tf s "name" %}</h3>
+        <p>{% tf s "function" %}</p>
+        <span class="card-value-label">{% tf s "value" %}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% if featured_programs %}
+<section class="section">
+  <div class="container">
+    <div class="flex justify-between items-center section-head" style="margin-bottom:32px;">
+      <div>
+        <div class="eyebrow">{% t "nav.programs" %}</div>
+        <h2>{% t "home.programs_title" %}</h2>
+      </div>
+      <a href="{% url 'programs:list' %}" class="btn btn-ghost">{% t "home.view_all" %} {% icon "chevron-right" "icon-sm" %}</a>
+    </div>
+    <div class="grid grid-3">
+      {% for p in featured_programs %}
+      <a href="{{ p.get_absolute_url }}" class="media-card">
+        <div class="media-thumb" {% if p.cover_image %}style="background-image:url('{{ p.cover_image.url }}')"{% endif %}>
+          {% if not p.cover_image %}<span class="placeholder-icon">{% icon "image" "icon-xl" %}</span>{% endif %}
+        </div>
+        <div class="media-body">
+          <span class="badge badge-{{ p.status }}">{% t "programs.status."|add:p.status %}</span>
+          <h3>{% tf p "title" %}</h3>
+          <p>{% tf p "summary" %}</p>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if latest_news %}
+<section class="section section--alt">
+  <div class="container">
+    <div class="flex justify-between items-center section-head" style="margin-bottom:32px;">
+      <div>
+        <div class="eyebrow">{% t "nav.news" %}</div>
+        <h2>{% t "home.news_title" %}</h2>
+      </div>
+      <a href="{% url 'news:list' %}" class="btn btn-ghost">{% t "home.view_all" %} {% icon "chevron-right" "icon-sm" %}</a>
+    </div>
+    <div class="grid grid-3">
+      {% for n in latest_news %}
+      <a href="{{ n.get_absolute_url }}" class="media-card">
+        <div class="media-thumb" {% if n.cover_image %}style="background-image:url('{{ n.cover_image.url }}')"{% endif %}>
+          {% if not n.cover_image %}<span class="placeholder-icon">{% icon "image" "icon-xl" %}</span>{% endif %}
+        </div>
+        <div class="media-body">
+          <div class="media-meta">{% icon "calendar" "icon-sm" %} {{ n.published_at|date:"d M Y" }}</div>
+          <h3>{% tf n "title" %}</h3>
+          <p>{% tf n "excerpt" %}</p>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section--dark section">
+  <div class="container text-center">
+    <h2>{% t "home.cta_contact" %}</h2>
+    <p style="max-width:520px;margin:0 auto 26px;">{% tf profile "mission" %}</p>
+    <a href="{% url 'contact:contact' %}" class="btn btn-accent">{% t "contact.title" %}</a>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,41 @@
+{% load static tdx_extras %}
+<header class="site-header">
+  <div class="container nav-wrap">
+    <a href="{% url 'core:home' %}" class="brand">
+      {% if site_profile.logo %}
+        <img src="{{ site_profile.logo.url }}" alt="{{ site_profile.org_name }}" class="brand-logo">
+      {% else %}
+        <span class="brand-mark">TDx</span>
+      {% endif %}
+      <span>
+        {{ site_profile.short_name|default:"TDx" }}
+        <small>{% tf site_profile "tagline" %}</small>
+      </span>
+    </a>
+
+    <nav class="main-nav" aria-label="Primary">
+      <a href="{% url 'core:home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">{% t "nav.home" %}</a>
+      <a href="{% url 'core:profile' %}" class="{% if request.resolver_match.url_name == 'profile' %}active{% endif %}">{% t "nav.profile" %}</a>
+      <a href="{% url 'core:vision_mission' %}" class="{% if request.resolver_match.url_name == 'vision_mission' %}active{% endif %}">{% t "nav.vision_mission" %}</a>
+      <a href="{% url 'programs:list' %}" class="{% if 'programs' in request.path %}active{% endif %}">{% t "nav.programs" %}</a>
+      <a href="{% url 'structure:team' %}" class="{% if 'team-structure' in request.path %}active{% endif %}">{% t "nav.structure" %}</a>
+      <a href="{% url 'news:list' %}" class="{% if 'news' in request.path %}active{% endif %}">{% t "nav.news" %}</a>
+      <a href="{% url 'gallery:list' %}" class="{% if 'gallery' in request.path %}active{% endif %}">{% t "nav.gallery" %}</a>
+      <a href="{% url 'contact:contact' %}" class="{% if 'contact' in request.path %}active{% endif %}">{% t "nav.contact" %}</a>
+    </nav>
+
+    <div class="nav-actions">
+      <div class="lang-switch">
+        <button type="button" class="lang-btn">{% icon "grid" "icon icon-sm" %}{{ LANGUAGE }}</button>
+        <div class="lang-menu">
+          {% for code, label in SITE_LANGUAGES %}
+            <a href="{% lang_url code %}" class="{% if LANGUAGE == code %}active{% endif %}">{{ label }}</a>
+          {% endfor %}
+        </div>
+      </div>
+      <button class="nav-toggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>

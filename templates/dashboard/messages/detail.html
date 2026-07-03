@@ -1,0 +1,15 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block dash_title %}Message{% endblock %}
+{% block dash_heading %}Message from {{ message_obj.name }}{% endblock %}
+{% block dash_content %}
+<div class="dash-card" style="max-width:640px;">
+  <p><strong>Name:</strong> {{ message_obj.name }}</p>
+  <p><strong>Email:</strong> <a href="mailto:{{ message_obj.email }}">{{ message_obj.email }}</a></p>
+  {% if message_obj.phone %}<p><strong>Phone:</strong> {{ message_obj.phone }}</p>{% endif %}
+  <p><strong>Subject:</strong> {{ message_obj.subject|default:"—" }}</p>
+  <p><strong>Received:</strong> {{ message_obj.created_at|date:"d M Y H:i" }}</p>
+  <hr style="border:none;border-top:1px solid var(--border);margin:18px 0;">
+  <p style="white-space:pre-line;">{{ message_obj.message }}</p>
+  <a href="{% url 'dashboard:message_list' %}" class="btn btn-ghost">&larr; Back to inbox</a>
+</div>
+{% endblock %}

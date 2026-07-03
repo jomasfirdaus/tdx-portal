@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load tdx_extras %}
+{% block title %}{% t "programs.title" %} — {{ site_profile.org_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <div class="breadcrumb"><a href="{% url 'core:home' %}">{% t "nav.home" %}</a> / {% t "nav.programs" %}</div>
+    <h1>{% t "programs.title" %}</h1>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div class="filter-row">
+      <a href="{% url 'programs:list' %}" class="filter-pill {% if not active_category %}active{% endif %}">{% t "home.view_all" %}</a>
+      {% for c in categories %}
+        <a href="?category={{ c.slug }}" class="filter-pill {% if active_category == c.slug %}active{% endif %}">{% tf c "name" %}</a>
+      {% endfor %}
+    </div>
+
+    {% if page_obj.object_list %}
+    <div class="grid grid-3">
+      {% for p in page_obj %}
+      <a href="{{ p.get_absolute_url }}" class="media-card">
+        <div class="media-thumb" {% if p.cover_image %}style="background-image:url('{{ p.cover_image.url }}')"{% endif %}>
+          {% if not p.cover_image %}<span class="placeholder-icon">{% icon "image" "icon-xl" %}</span>{% endif %}
+        </div>
+        <div class="media-body">
+          <span class="badge badge-{{ p.status }}">{% t "programs.status."|add:p.status %}</span>
+          <h3>{% tf p "title" %}</h3>
+          <p>{% tf p "summary" %}</p>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+
+    {% include "partials/pagination.html" %}
+    {% else %}
+    <div class="empty-state">{% icon "clipboard" "icon-xl" %}<p>{% t "programs.empty" %}</p></div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

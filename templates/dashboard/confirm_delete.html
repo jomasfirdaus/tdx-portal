@@ -1,0 +1,16 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block dash_title %}Confirm delete{% endblock %}
+{% block dash_heading %}Confirm delete{% endblock %}
+
+{% block dash_content %}
+<div class="dash-card" style="max-width:520px;">
+  <p>Are you sure you want to delete <strong>{{ object }}</strong>? This action cannot be undone.</p>
+  <form method="post">
+    {% csrf_token %}
+    <div class="flex gap-12">
+      <button type="submit" class="btn btn-danger">Yes, delete</button>
+      <a href="{% url 'dashboard:'|add:url_namespace|add:'_list' %}" class="btn btn-ghost">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

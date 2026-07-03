@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load tdx_extras %}
+{% block title %}{% tf album "title" %} — {{ site_profile.org_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <div class="breadcrumb"><a href="{% url 'core:home' %}">{% t "nav.home" %}</a> / <a href="{% url 'gallery:list' %}">{% t "nav.gallery" %}</a> / {% tf album "title" %}</div>
+    <h1>{% tf album "title" %}</h1>
+    {% if album.description_en %}<p style="max-width:640px;">{% tf album "description" %}</p>{% endif %}
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div class="gallery-grid">
+      {% for photo in album.photos.all %}
+      <div class="gallery-item" data-lightbox-src="{{ photo.image.url }}" data-lightbox-alt="{% tf photo 'caption' %}">
+        <img src="{{ photo.image.url }}" alt="{% tf photo 'caption' %}" loading="lazy">
+      </div>
+      {% endfor %}
+    </div>
+    <a href="{% url 'gallery:list' %}" class="btn btn-ghost" style="margin-top:26px;">&larr; {% t "common.back" %}</a>
+  </div>
+</section>
+{% endblock %}
