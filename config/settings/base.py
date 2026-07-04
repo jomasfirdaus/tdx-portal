@@ -13,11 +13,6 @@ from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-print("DB USER:", config("DB_USER"))
-print("DB HOST:", config("DB_HOST"))
-print("DB PASSWORD:", config("DB_PASSWORD"))
-print("DB PORT:", config("DB_PORT"))
-
 # --------------------------------------------------------------------------
 # CORE SECURITY
 # --------------------------------------------------------------------------
@@ -86,6 +81,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
 LOGIN_MAX_ATTEMPTS = 5
+LOGIN_LOCKOUT_MINUTES = 15
 
 
 # --------------------------------------------------------------------------
