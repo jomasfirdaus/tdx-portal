@@ -11,6 +11,11 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+# os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+os.environ.setdefault(
+    'DJANGO_SETTINGS_MODULE',
+    # pakai env var kalau ada (Docker), kalau tidak fallback ke dev
+    os.getenv('DJANGO_SETTINGS_MODULE', 'config.settings.dev')
+)
 
 application = get_wsgi_application()
