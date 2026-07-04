@@ -85,6 +85,8 @@ ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
+LOGIN_MAX_ATTEMPTS = 5
+
 
 # --------------------------------------------------------------------------
 # TEMPLATES
