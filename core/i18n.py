@@ -1,5 +1,5 @@
 """
-Lightweight static-string translation store for TDx.
+Lightweight static-string translation store for TDC.
 
 Why not Django's built-in gettext i18n? This project keeps almost all real
 content (Profile, News, Programs, Team, Gallery captions...) in the database
@@ -24,11 +24,11 @@ STRINGS = {
     "nav.contact":     {"en": "Contact",        "tet": "Kontaktu",         "pt": "Contacto"},
     "nav.staff_login": {"en": "Staff Login",    "tet": "Tama Ekipa",       "pt": "Acesso da Equipa"},
 
-    "home.hero_eyebrow": {"en": "Timor Diagnostics", "tet": "Timor Diagnostics", "pt": "Timor Diagnostics"},
+    "home.hero_eyebrow": {"en": "Timor Diagnostics Center", "tet": "Timor Diagnostics Center", "pt": "Timor Diagnostics Center"},
     "home.cta_programs": {"en": "Explore our programs", "tet": "Haree ami-nia programa", "pt": "Explore os nossos programas"},
     "home.cta_contact":  {"en": "Get in touch", "tet": "Kontaktu ami", "pt": "Fale connosco"},
     "home.about_title":  {"en": "Who we are", "tet": "Ami se", "pt": "Quem somos"},
-    "home.stats_title":  {"en": "TDx at a glance", "tet": "TDx iha vista badak", "pt": "TDx em números"},
+    "home.stats_title":  {"en": "TDC at a glance", "tet": "TDC iha vista badak", "pt": "TDC em números"},
     "home.services_title": {"en": "Services & Expertise", "tet": "Servisu & Kompeténsia", "pt": "Serviços e Especialidade"},
     "home.programs_title": {"en": "Featured Programs", "tet": "Programa Sira Destaka", "pt": "Programas em Destaque"},
     "home.news_title":    {"en": "Latest News", "tet": "Notísia Foun", "pt": "Últimas Notícias"},

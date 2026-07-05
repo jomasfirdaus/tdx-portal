@@ -1,0 +1,81 @@
+/* =========================================================
+   TDx THEME OVERRIDE
+   Purple + Green (NO LAYOUT CHANGES)
+   Only replaces color tokens
+========================================================= */
+
+:root {
+
+  /* PRIMARY (Purple identity) */
+  --primary: #6D28D9 !important;
+  --primary-dark: #4C1D95 !important;
+  --primary-light: #F3E8FF !important;
+
+  /* ACCENT (Health green) */
+  --accent: #22C55E !important;
+  --accent-dark: #15803D !important;
+  --accent-light: #DCFCE7 !important;
+
+  /* SUCCESS aligned with health green */
+  --success: #22C55E !important;
+
+}
+
+/* =========================
+   OPTIONAL VISUAL POLISH
+========================= */
+
+/* Links */
+a {
+  color: var(--primary);
+}
+
+a:hover {
+  color: var(--accent);
+}
+
+/* Buttons */
+.btn-primary {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+}
+
+.btn-accent {
+  background: var(--accent);
+}
+
+.btn-accent:hover {
+  background: var(--accent-dark);
+}
+
+/* Navbar hover highlight */
+.main-nav a:hover,
+.main-nav a.active {
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+/* Alerts */
+.alert-info {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+.alert-success {
+  background: var(--accent-light);
+  color: var(--accent-dark);
+}
+
+/* Hero tag dot */
+.hero-tag .dot {
+  background: var(--accent);
+}
+
+/* Stat strip accent bar */
+.stat-tag::before {
+  background: var(--accent);
+}

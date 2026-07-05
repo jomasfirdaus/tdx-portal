@@ -7,6 +7,7 @@
 <meta name="description" content="{% block meta_description %}{% tf site_profile 'tagline' %}{% endblock %}">
 <link rel="icon" href="{% if site_profile.favicon %}{{ site_profile.favicon.url }}{% else %}{% static 'img/favicon.svg' %}{% endif %}">
 <link rel="stylesheet" href="{% static 'css/main.css' %}">
+<link rel="stylesheet" href="{% static 'css/theme-purple-green.css' %}">
 {% block extra_head %}{% endblock %}
 </head>
 <body>
