@@ -12,7 +12,7 @@ Safe to re-run: uses update_or_create / get_or_create throughout.
 """
 from django.core.management.base import BaseCommand
 
-from core.models import CoreValue, ServiceArea, SiteProfile, Statistic
+from core.models import CoreValue, Location, ServiceArea, SiteProfile, Statistic
 from structure.models import Department
 
 
@@ -25,6 +25,7 @@ class Command(BaseCommand):
         self.seed_values()
         self.seed_statistics()
         self.seed_structure()
+        self.seed_location()
         self.stdout.write(self.style.SUCCESS("TDx seed data loaded. Review and refine wording via the dashboard, especially the Tetum/Portuguese columns."))
 
     def seed_profile(self):
@@ -115,6 +116,29 @@ class Command(BaseCommand):
             ),
         )
         self.stdout.write(f"Site profile: {profile}")
+
+    def seed_location(self):
+        location, _ = Location.objects.update_or_create(
+            name_en="TDx Head Office",
+            defaults=dict(
+                name_tet="Eskritóriu Sentrál TDx",
+                name_pt="Sede da TDx",
+                address_en="Dili, Timor-Leste",
+                address_tet="Dili, Timor-Leste",
+                address_pt="Díli, Timor-Leste",
+                latitude="-8.556856",
+                longitude="125.560314",
+                phone="+670 000 0000",
+                email="info@tdx.tl",
+                opening_hours_en="Mon\u2013Fri: 08:00\u201317:00\nSat: 08:00\u201312:00\nSun: Closed",
+                opening_hours_tet="Seg\u2013Sex: 08:00\u201317:00\nSab: 08:00\u201312:00\nDom: Taka",
+                opening_hours_pt="Seg\u2013Sex: 08:00\u201317:00\nS\u00e1b: 08:00\u201312:00\nDom: Fechado",
+                is_primary=True,
+                order=0,
+                is_active=True,
+            ),
+        )
+        self.stdout.write(f"Location: {location} (update the coordinates/address via Dashboard \u2192 Locations)")
 
     def seed_services(self):
         rows = [

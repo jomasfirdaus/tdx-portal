@@ -57,7 +57,7 @@ class SiteProfile(TimeStampedModel):
     phone_primary = models.CharField(max_length=30, blank=True, validators=[phone_validator])
     phone_secondary = models.CharField(max_length=30, blank=True, validators=[phone_validator])
     email_primary = models.EmailField(blank=True)
-    map_embed_url = models.URLField(blank=True, help_text="Google Maps embed URL for the Contact page.")
+    map_embed_url = models.URLField(blank=True, help_text="Legacy Google Maps embed URL — superseded by the Locations module (Dashboard → Locations).")
 
     facebook_url = models.URLField(blank=True)
     instagram_url = models.URLField(blank=True)
@@ -82,6 +82,58 @@ class SiteProfile(TimeStampedModel):
             obj, _ = cls.objects.get_or_create(pk=1)
             cache.set("site_profile_singleton", obj, 300)
         return obj
+
+
+class Location(TimeStampedModel):
+    """
+    A physical office/branch shown on the website (homepage + contact page)
+    with an interactive Leaflet/OpenStreetMap map. Multiple rows are allowed
+    so the module stays reusable if TDx opens additional branches; the row
+    flagged `is_primary` (or the first active one) is treated as the main
+    office.
+    """
+
+    name_en = models.CharField(max_length=150)
+    name_tet = models.CharField(max_length=150, blank=True)
+    name_pt = models.CharField(max_length=150, blank=True)
+
+    address_en = models.CharField(max_length=255)
+    address_tet = models.CharField(max_length=255, blank=True)
+    address_pt = models.CharField(max_length=255, blank=True)
+
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, help_text="e.g. -8.556856")
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, help_text="e.g. 125.560314")
+    google_maps_url = models.URLField(
+        blank=True,
+        help_text="Optional 'Get Directions' link. If empty, a directions link is built from the coordinates.",
+    )
+
+    phone = models.CharField(max_length=30, blank=True, validators=[phone_validator])
+    email = models.EmailField(blank=True)
+
+    opening_hours_en = models.TextField(blank=True, help_text="One line per entry, e.g. 'Mon–Fri: 08:00–17:00'.")
+    opening_hours_tet = models.TextField(blank=True)
+    opening_hours_pt = models.TextField(blank=True)
+
+    is_primary = models.BooleanField(default=False, db_index=True, help_text="Main office highlighted first.")
+    order = models.PositiveSmallIntegerField(default=0, db_index=True)
+    is_active = models.BooleanField(default=True, db_index=True)
+
+    class Meta:
+        ordering = ["-is_primary", "order", "id"]
+        indexes = [models.Index(fields=["is_active", "-is_primary", "order"])]
+
+    def __str__(self):
+        return self.name_en
+
+    @property
+    def directions_url(self):
+        """External directions link: admin-supplied URL wins, otherwise an
+        OpenStreetMap directions link built from the stored coordinates (no
+        API key required)."""
+        if self.google_maps_url:
+            return self.google_maps_url
+        return f"https://www.openstreetmap.org/directions?to={self.latitude}%2C{self.longitude}"
 
 
 class ServiceArea(TimeStampedModel):

@@ -140,4 +140,17 @@
   </div>
 </section>
 
+{% include "partials/location_map.html" with locations=locations %}
+
+{% endblock %}
+
+{% block extra_head %}
+{% if locations %}<link rel="stylesheet" href="{% static 'vendor/leaflet/leaflet.css' %}">{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+{% if locations %}
+<script src="{% static 'vendor/leaflet/leaflet.js' %}"></script>
+<script src="{% static 'js/location-map.js' %}"></script>
+{% endif %}
 {% endblock %}

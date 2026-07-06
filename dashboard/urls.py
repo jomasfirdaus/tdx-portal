@@ -24,6 +24,7 @@ urlpatterns = [
     path("audit-log/", views.audit_log, name="audit_log"),
 ]
 
+urlpatterns += crud_urls(views.location_crud, "location")
 urlpatterns += crud_urls(views.service_area_crud, "service_area")
 urlpatterns += crud_urls(views.core_value_crud, "core_value")
 urlpatterns += crud_urls(views.statistic_crud, "statistic")

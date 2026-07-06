@@ -4,7 +4,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from accounts.models import AdminUser
-from core.models import CoreValue, ServiceArea, SiteProfile, Statistic
+from core.models import CoreValue, Location, ServiceArea, SiteProfile, Statistic
 from gallery.models import Album, Photo
 from news.models import NewsCategory, NewsPost
 from programs.models import Program, ProgramCategory
@@ -47,6 +47,15 @@ class SiteProfileForm(ImageValidationMixin):
             "about_secondary_en": TEXTAREA_WIDGET, "about_secondary_tet": TEXTAREA_WIDGET, "about_secondary_pt": TEXTAREA_WIDGET,
             "vision_en": TEXTAREA_WIDGET, "vision_tet": TEXTAREA_WIDGET, "vision_pt": TEXTAREA_WIDGET,
             "mission_en": TEXTAREA_WIDGET, "mission_tet": TEXTAREA_WIDGET, "mission_pt": TEXTAREA_WIDGET,
+        }
+
+
+class LocationForm(forms.ModelForm):
+    class Meta:
+        model = Location
+        exclude = ["created_at", "updated_at"]
+        widgets = {
+            "opening_hours_en": TEXTAREA_WIDGET, "opening_hours_tet": TEXTAREA_WIDGET, "opening_hours_pt": TEXTAREA_WIDGET,
         }
 
 

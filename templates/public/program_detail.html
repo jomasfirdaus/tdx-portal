@@ -10,7 +10,7 @@
     <span class="badge badge-{{ program.status }}">{% t "programs.status."|add:program.status %}</span>
     <h1>{% tf program "title" %}</h1>
     <div class="media-meta">
-      {% if program.location %}{% icon "map-pin" "icon-sm" %} {{ program.location }}{% endif %}
+      {% if program.location_en %}{% icon "map-pin" "icon-sm" %} {% tf program "location" %}{% endif %}
       {% if program.start_date %}&nbsp;&middot;&nbsp;{% icon "calendar" "icon-sm" %} {{ program.start_date|date:"d M Y" }}{% if program.end_date %} &ndash; {{ program.end_date|date:"d M Y" }}{% endif %}{% endif %}
     </div>
   </div>

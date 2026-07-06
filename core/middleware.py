@@ -53,15 +53,17 @@ class SecurityHeadersMiddleware(MiddlewareMixin):
     """
     Adds a Content-Security-Policy and a couple of headers Django's
     SecurityMiddleware doesn't set out of the box. Kept intentionally strict:
-    no inline scripts/styles beyond what the base template needs, no
-    third-party origins.
+    no inline scripts/styles beyond what the base template needs, and the
+    only third-party origin is OpenStreetMap's tile servers (images only)
+    for the Leaflet location maps — Leaflet's JS/CSS is vendored and served
+    from 'self'.
     """
 
     def process_response(self, request, response):
         response.setdefault(
             "Content-Security-Policy",
             "default-src 'self'; "
-            "img-src 'self' data:; "
+            "img-src 'self' data: https://*.tile.openstreetmap.org https://tile.openstreetmap.org; "
             "style-src 'self' 'unsafe-inline'; "
             "script-src 'self'; "
             "font-src 'self'; "

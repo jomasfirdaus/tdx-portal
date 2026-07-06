@@ -55,7 +55,11 @@ class Program(TimeStampedModel):
         related_name="programs", db_index=True,
     )
     cover_image = models.ImageField(upload_to="programs/", blank=True, null=True)
-    location = models.CharField(max_length=150, blank=True)
+
+    location_en = models.CharField(max_length=150, blank=True)
+    location_tet = models.CharField(max_length=150, blank=True)
+    location_pt = models.CharField(max_length=150, blank=True)
+
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="ongoing", db_index=True)
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)

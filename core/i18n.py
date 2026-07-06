@@ -75,9 +75,30 @@ STRINGS = {
     "contact.phone": {"en": "Phone", "tet": "Telefone", "pt": "Telefone"},
     "contact.email": {"en": "Email", "tet": "Email", "pt": "Email"},
 
+    # Contact-form validation & throttle messages (previously hardcoded English).
+    "contact.err_required": {"en": "This field is required.", "tet": "Kampu ida-ne'e presiza prienxe.", "pt": "Este campo é obrigatório."},
+    "contact.err_invalid_email": {"en": "Enter a valid email address.", "tet": "Hakerek email ida ne'ebé loos.", "pt": "Introduza um endereço de email válido."},
+    "contact.err_spam": {"en": "Spam detected.", "tet": "Deteta spam.", "pt": "Spam detetado."},
+    "contact.err_too_fast": {"en": "Please take a moment to fill in the form.", "tet": "Favór ida, uza tempu uitoan atu prienxe formuláriu.", "pt": "Por favor, dedique um momento a preencher o formulário."},
+    "contact.err_message_short": {"en": "Please write a slightly longer message so we can help you.", "tet": "Favór ida, hakerek mensajen naruk uitoan atu ami bele ajuda ita.", "pt": "Por favor, escreva uma mensagem um pouco mais longa para que possamos ajudar."},
+    "contact.err_throttled": {"en": "You're sending messages too quickly. Please try again later.", "tet": "Ita haruka mensajen lalais liu. Favór ida, koko fali depois.", "pt": "Está a enviar mensagens demasiado depressa. Tente novamente mais tarde."},
+
+    # Location / map module (homepage + contact page).
+    "location.title": {"en": "Find Us", "tet": "Hetan Ami", "pt": "Encontre-nos"},
+    "location.subtitle": {"en": "Visit our office", "tet": "Vizita ami-nia eskritóriu", "pt": "Visite o nosso escritório"},
+    "location.address": {"en": "Address", "tet": "Enderesu", "pt": "Endereço"},
+    "location.hours": {"en": "Opening Hours", "tet": "Oras Loke", "pt": "Horário de Funcionamento"},
+    "location.get_directions": {"en": "Get Directions", "tet": "Hetan Direksaun", "pt": "Obter Direções"},
+    "location.view_map": {"en": "View on map", "tet": "Haree iha mapa", "pt": "Ver no mapa"},
+
     "footer.rights": {"en": "All rights reserved.", "tet": "Direitu hotu rezerva.", "pt": "Todos os direitos reservados."},
     "footer.quicklinks": {"en": "Quick Links", "tet": "Ligasaun Lalais", "pt": "Links Rápidos"},
     "footer.follow": {"en": "Follow us", "tet": "Tuir ami", "pt": "Siga-nos"},
+
+    "common.skip_to_content": {"en": "Skip to content", "tet": "Salta ba konteúdu", "pt": "Saltar para o conteúdo"},
+    "errors.404_message": {"en": "The page you're looking for doesn't exist or has moved.", "tet": "Pájina ne'ebé ita buka la eziste ka muda ona fatin.", "pt": "A página que procura não existe ou foi movida."},
+    "errors.500_message": {"en": "Something went wrong on our side. Please try again shortly.", "tet": "Iha problema iha ami-nia parte. Favór ida, koko fali lakleur.", "pt": "Ocorreu um erro do nosso lado. Tente novamente em breve."},
+    "errors.back_home": {"en": "Back to homepage", "tet": "Fila ba pájina prinsipál", "pt": "Voltar à página inicial"},
 
     "common.learn_more": {"en": "Learn more", "tet": "Hatene tan", "pt": "Saiba mais"},
     "common.back": {"en": "Back", "tet": "Fila", "pt": "Voltar"},

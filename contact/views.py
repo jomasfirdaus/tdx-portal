@@ -9,6 +9,7 @@ from django.views.decorators.http import require_http_methods
 
 from .forms import ContactForm
 from core.i18n import t as translate
+from core.models import Location
 
 security_logger = logging.getLogger("tdx.security")
 
@@ -23,14 +24,15 @@ def _client_ip(request):
 @require_http_methods(["GET", "POST"])
 def contact_view(request):
     ip = _client_ip(request)
+    lang = getattr(request, "LANGUAGE", "en")
     throttle_key = f"contact_throttle:{ip}"
 
     if request.method == "POST":
         if cache.get(throttle_key, 0) >= 5:
-            messages.error(request, "You're sending messages too quickly. Please try again later.")
+            messages.error(request, translate("contact.err_throttled", lang))
             return redirect("contact:contact")
 
-        form = ContactForm(request.POST)
+        form = ContactForm(request.POST, lang=lang)
         if form.is_valid():
             obj = form.save(commit=False)
             obj.ip_address = ip
@@ -50,10 +52,11 @@ def contact_view(request):
             except Exception:
                 security_logger.exception("contact_email_failed")
 
-            messages.success(request, translate("contact.success", getattr(request, "LANGUAGE", "en")))
+            messages.success(request, translate("contact.success", lang))
             return redirect("contact:contact")
     else:
         import time
-        form = ContactForm(initial={"ts": time.time()})
+        form = ContactForm(initial={"ts": time.time()}, lang=lang)
 
-    return render(request, "public/contact.html", {"form": form})
+    locations = Location.objects.filter(is_active=True)
+    return render(request, "public/contact.html", {"form": form, "locations": locations})

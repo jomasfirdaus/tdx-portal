@@ -6,7 +6,7 @@ from news.models import NewsPost
 from programs.models import Program
 from structure.models import Department, TeamMember
 
-from .models import CoreValue, ServiceArea, SiteProfile, Statistic
+from .models import CoreValue, Location, ServiceArea, SiteProfile, Statistic
 
 
 def home(request):
@@ -26,6 +26,7 @@ def home(request):
             "featured_programs": Program.published.filter(is_featured=True)[:3],
             "latest_news": NewsPost.published.all()[:3],
             "latest_album": Album.objects.filter(is_published=True).prefetch_related("photos").first(),
+            "locations": list(Location.objects.filter(is_active=True)),
         }
         cache.set(cache_key, ctx, 120)
     return render(request, "public/home.html", ctx)

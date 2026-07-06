@@ -6,7 +6,7 @@ from django.views.generic import UpdateView
 
 from accounts.models import AdminUser, LoginActivity
 from contact.models import ContactMessage
-from core.models import SiteProfile
+from core.models import Location, SiteProfile
 from gallery.models import Album, Photo
 from news.models import NewsPost
 from programs.models import Program
@@ -16,7 +16,7 @@ from .crud import build_crud_views, group_form_fields
 from .forms import (
     AdminUserForm, AlbumForm, CoreValueForm, DepartmentForm, NewsCategoryForm,
     NewsPostForm, PhotoForm, ProgramCategoryForm, ProgramForm, ServiceAreaForm,
-    SiteProfileForm, StatisticForm, TeamMemberForm,
+    LocationForm, SiteProfileForm, StatisticForm, TeamMemberForm,
 )
 from .mixins import StaffRequiredMixin, SuperAdminRequiredMixin
 from core.models import CoreValue, ServiceArea, Statistic
@@ -108,6 +108,12 @@ def audit_log(request):
 
 
 # --- Generic content CRUD sets -------------------------------------------
+location_crud = build_crud_views(
+    model=Location, form_class=LocationForm, url_namespace="location",
+    template_folder="generic",
+    list_display=["name_en", "phone", "is_primary", "order", "is_active"],
+    search_fields=["name_en", "address_en"], ordering=["-is_primary", "order"],
+)
 service_area_crud = build_crud_views(
     model=ServiceArea, form_class=ServiceAreaForm, url_namespace="service_area",
     template_folder="generic", list_display=["name_en", "order", "is_active"],

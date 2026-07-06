@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load tdx_extras %}
+{% load static tdx_extras %}
 {% block title %}{% t "contact.title" %} — {{ site_profile.org_name }}{% endblock %}
 
 {% block content %}
@@ -48,27 +48,34 @@
       </form>
     </div>
 
-    <div>
-      {% if site_profile.map_embed_url %}
-      <div class="card" style="padding:0; overflow:hidden; margin-bottom:20px;">
-        <iframe src="{{ site_profile.map_embed_url }}" width="100%" height="260" style="border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-      </div>
-      {% endif %}
-      <div class="card">
-        <h3>{% t "contact.office" %}</h3>
-        <ul style="list-style:none; padding:0; display:flex; flex-direction:column; gap:14px;">
-          {% if site_profile.address_en %}
-          <li class="flex items-center gap-12">{% icon "map-pin" %} <span>{% tf site_profile "address" %}</span></li>
-          {% endif %}
-          {% if site_profile.phone_primary %}
-          <li class="flex items-center gap-12">{% icon "phone" %} <a href="tel:{{ site_profile.phone_primary }}">{{ site_profile.phone_primary }}</a></li>
-          {% endif %}
-          {% if site_profile.email_primary %}
-          <li class="flex items-center gap-12">{% icon "mail" %} <a href="mailto:{{ site_profile.email_primary }}">{{ site_profile.email_primary }}</a></li>
-          {% endif %}
-        </ul>
-      </div>
+    <div class="card">
+      <h3>{% t "contact.office" %}</h3>
+      <ul style="list-style:none; padding:0; display:flex; flex-direction:column; gap:14px;">
+        {% if site_profile.address_en %}
+        <li class="flex items-center gap-12">{% icon "map-pin" %} <span>{% tf site_profile "address" %}</span></li>
+        {% endif %}
+        {% if site_profile.phone_primary %}
+        <li class="flex items-center gap-12">{% icon "phone" %} <a href="tel:{{ site_profile.phone_primary }}">{{ site_profile.phone_primary }}</a></li>
+        {% endif %}
+        {% if site_profile.email_primary %}
+        <li class="flex items-center gap-12">{% icon "mail" %} <a href="mailto:{{ site_profile.email_primary }}">{{ site_profile.email_primary }}</a></li>
+        {% endif %}
+      </ul>
     </div>
   </div>
 </section>
+
+{# Reusable Location Map module — same component as the homepage. #}
+{% include "partials/location_map.html" with locations=locations %}
+{% endblock %}
+
+{% block extra_head %}
+{% if locations %}<link rel="stylesheet" href="{% static 'vendor/leaflet/leaflet.css' %}">{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+{% if locations %}
+<script src="{% static 'vendor/leaflet/leaflet.js' %}"></script>
+<script src="{% static 'js/location-map.js' %}"></script>
+{% endif %}
 {% endblock %}

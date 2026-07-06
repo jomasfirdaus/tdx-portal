@@ -1,0 +1,86 @@
+{% load tdx_extras %}
+{% comment %}
+Reusable Location Map module (Leaflet + OpenStreetMap, no API key).
+
+Usage: {% include "partials/location_map.html" with locations=locations %}
+Optional: heading=False to suppress the section header (e.g. on the contact
+page, which already has its own page header).
+
+The map is initialised by static/js/location-map.js, which reads the
+data-* attributes below — no inline scripts, so the site's strict
+Content-Security-Policy (script-src 'self') is preserved.
+{% endcomment %}
+{% if locations %}
+<section class="section location-section" id="location">
+  <div class="container">
+    {% if heading|default:True %}
+    <div class="section-head section-head--center">
+      <div class="eyebrow">{% t "location.subtitle" %}</div>
+      <h2>{% t "location.title" %}</h2>
+    </div>
+    {% endif %}
+
+    {% for loc in locations %}
+    <div class="location-block {% if not forloop.first %}location-block--spaced{% endif %}">
+      <div class="location-grid">
+        <div class="card location-info">
+          <h3>{% tf loc "name" %}</h3>
+          <ul class="location-details">
+            <li class="flex gap-12">
+              {% icon "map-pin" %}
+              <div>
+                <span class="location-label">{% t "location.address" %}</span>
+                <span>{% tf loc "address" %}</span>
+              </div>
+            </li>
+            {% if loc.phone %}
+            <li class="flex gap-12">
+              {% icon "phone" %}
+              <div>
+                <span class="location-label">{% t "contact.phone" %}</span>
+                <a href="tel:{{ loc.phone }}">{{ loc.phone }}</a>
+              </div>
+            </li>
+            {% endif %}
+            {% if loc.email %}
+            <li class="flex gap-12">
+              {% icon "mail" %}
+              <div>
+                <span class="location-label">{% t "contact.email" %}</span>
+                <a href="mailto:{{ loc.email }}">{{ loc.email }}</a>
+              </div>
+            </li>
+            {% endif %}
+            {% if loc.opening_hours_en %}
+            <li class="flex gap-12">
+              {% icon "calendar" %}
+              <div>
+                <span class="location-label">{% t "location.hours" %}</span>
+                {% tf loc "opening_hours" as hours %}
+                <span class="location-hours">{{ hours|linebreaksbr }}</span>
+              </div>
+            </li>
+            {% endif %}
+          </ul>
+          <a href="{{ loc.directions_url }}" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
+            {% t "location.get_directions" %} {% icon "arrow-right" "icon icon-sm" %}
+          </a>
+        </div>
+
+        <div class="card location-map-card">
+          <div class="location-map"
+               role="application"
+               aria-label="{% t 'location.view_map' %}: {% tf loc 'name' %}"
+               data-lat="{{ loc.latitude }}"
+               data-lng="{{ loc.longitude }}"
+               data-name="{% tf loc 'name' %}"
+               data-address="{% tf loc 'address' %}"
+               data-directions-url="{{ loc.directions_url }}"
+               data-directions-label="{% t 'location.get_directions' %}"></div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
