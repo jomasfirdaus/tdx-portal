@@ -1,7 +1,5 @@
-{% load tdx_extras %}<!DOCTYPE html>
-{# Deliberately standalone (no {% extends %}): a 500 may mean the database or
-   a context processor is broken, so this page must render with nothing but
-   the request. The {% t %} tag reads request.LANGUAGE with no DB access. #}
+{% load tdx_extras %}
+<!DOCTYPE html>
 <html lang="{{ LANGUAGE|default:'en' }}"><head><meta charset="UTF-8"><title>500 — TDx</title>
 <link rel="stylesheet" href="/static/css/main.css"></head>
 <body>
