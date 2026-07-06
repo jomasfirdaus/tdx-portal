@@ -57,4 +57,8 @@ class Photo(TimeStampedModel):
         indexes = [models.Index(fields=["album", "order"])]
 
     def __str__(self):
-        return f"{self.album.title_en} #{self.pk}"
+        # Guard against unsaved/partial instances: templates auto-call
+        # callables and repr/str may run before the FK is assigned.
+        if self.album_id:
+            return f"{self.album.title_en} #{self.pk}"
+        return f"Photo #{self.pk or 'new'}"

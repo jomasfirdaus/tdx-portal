@@ -97,6 +97,7 @@ def build_crud_views(*, model, form_class, url_namespace, template_folder, list_
             ctx = super().get_context_data(**kwargs)
             ctx["url_namespace"] = _url_namespace
             ctx["mode"] = "create"
+            ctx["model_verbose"] = _model._meta.verbose_name
             ctx["base_fields"], ctx["lang_fields"] = group_form_fields(ctx["form"])
             return ctx
 
@@ -115,6 +116,7 @@ def build_crud_views(*, model, form_class, url_namespace, template_folder, list_
             ctx = super().get_context_data(**kwargs)
             ctx["url_namespace"] = _url_namespace
             ctx["mode"] = "update"
+            ctx["model_verbose"] = _model._meta.verbose_name
             ctx["base_fields"], ctx["lang_fields"] = group_form_fields(ctx["form"])
             return ctx
 

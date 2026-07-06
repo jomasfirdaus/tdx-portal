@@ -8,7 +8,6 @@ Rule:
 """
 
 from pathlib import Path
-import os
 from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -182,24 +181,18 @@ MEDIA_ROOT = BASE_DIR / "media"
 #
 # All user uploads (logos, hero images, news covers, program covers, gallery
 # photos, team photos, favicons — every ImageField/FileField) go to a MinIO
-# bucket via the S3 API. Set MEDIA_STORAGE=local in .env only for offline
+# bucket through core.storage.MinioMediaStorage, a custom backend built on
+# the official MinIO Python SDK (the previous django-storages + boto3 stack
+# has been removed). Set MEDIA_STORAGE=local in .env only for offline
 # development without a MinIO instance.
 
 MEDIA_STORAGE = config("MEDIA_STORAGE", default="minio")
 
 if MEDIA_STORAGE == "minio":
-    # boto3 >= 1.36 defaults to streaming uploads with trailing checksums
-    # (aws-chunked encoding). Reverse proxies in front of MinIO (Cloudflare,
-    # nginx/CapRover) often re-buffer the body, which breaks that format and
-    # yields "XAmzContentSHA256Mismatch" on every upload. These env vars tell
-    # botocore to only add checksums when the operation requires them —
-    # plain, proxy-safe PUTs.
-    os.environ.setdefault("AWS_REQUEST_CHECKSUM_CALCULATION", "when_required")
-    os.environ.setdefault("AWS_RESPONSE_CHECKSUM_VALIDATION", "when_required")
-
     _minio_endpoint = config("MINIO_ENDPOINT_URL")            # e.g. http://srv-captain--minio:9000
+    # Scheme-less endpoints are assumed to be https (the backend parses the
+    # scheme into the SDK's `secure` flag).
     if not _minio_endpoint.startswith(("http://", "https://")):
-        # boto3 raises "Invalid endpoint" for scheme-less URLs — assume https.
         _minio_endpoint = f"https://{_minio_endpoint}"
 
     _minio_options = {
@@ -208,36 +201,34 @@ if MEDIA_STORAGE == "minio":
         "secret_key": config("MINIO_SECRET_KEY"),
         "bucket_name": config("MINIO_BUCKET", default="tdx-media"),
         "region_name": config("MINIO_REGION", default="us-east-1"),
-        # MinIO requires path-style addressing (bucket in the path, not the
-        # hostname) and Signature V4.
-        "addressing_style": "path",
-        "signature_version": "s3v4",
-        # Never overwrite an existing object with the same name — mirrors
-        # FileSystemStorage behaviour (a suffix is appended on collision).
-        "file_overwrite": False,
-        "default_acl": None,
-        # True (default): media URLs are time-limited signed URLs, so the
+        # True (default): media URLs are time-limited presigned URLs, so the
         # bucket can stay fully private. Set False only together with
-        # MINIO_CUSTOM_DOMAIN and a public-read bucket policy.
+        # MINIO_CUSTOM_DOMAIN (or a public-read bucket policy).
         "querystring_auth": config("MINIO_QUERYSTRING_AUTH", default=True, cast=bool),
+        # Lifetime of presigned URLs (only used when querystring_auth=True).
+        "url_expiry_seconds": config("MINIO_URL_EXPIRY", default=3600, cast=int),
+        # Create the bucket on first upload if it doesn't exist — handy in
+        # dev, usually left off in prod where the bucket is provisioned.
+        "auto_create_bucket": config("MINIO_AUTO_CREATE_BUCKET", default=False, cast=bool),
     }
-    # Public host for browser-facing URLs (e.g. minio.example.com/tdx-media).
-    # When set, URLs use this domain instead of the (possibly internal)
-    # endpoint above.
+    # Public host for browser-facing URLs (e.g. minio.example.com/tdx-media —
+    # include the bucket for path-style access). When set, URLs use this
+    # domain instead of the (possibly internal) endpoint above.
     _minio_custom_domain = config("MINIO_CUSTOM_DOMAIN", default="")
+    _minio_url_protocol = config("MINIO_URL_PROTOCOL", default="https:")
     if _minio_custom_domain:
         _minio_options["custom_domain"] = _minio_custom_domain
-        _minio_options["url_protocol"] = config("MINIO_URL_PROTOCOL", default="https:")
+        _minio_options["url_protocol"] = _minio_url_protocol
 
     _default_storage = {
-        "BACKEND": "storages.backends.s3.S3Storage",
+        "BACKEND": "core.storage.MinioMediaStorage",
         "OPTIONS": _minio_options,
     }
 
     # Origin the browser loads media from — appended to the CSP img-src by
     # core.middleware.SecurityHeadersMiddleware so uploaded images render.
     if _minio_custom_domain:
-        MEDIA_CSP_ORIGIN = f"{_minio_options['url_protocol']}//{_minio_custom_domain.split('/')[0]}"
+        MEDIA_CSP_ORIGIN = f"{_minio_url_protocol}//{_minio_custom_domain.split('/')[0]}"
     else:
         MEDIA_CSP_ORIGIN = _minio_options["endpoint_url"].rstrip("/")
 else:

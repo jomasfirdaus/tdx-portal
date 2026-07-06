@@ -1,6 +1,6 @@
 {% extends "dashboard/base_dashboard.html" %}
 {% load tdx_extras %}
-{% block dash_title %}{% if mode == "create" %}Add{% else %}Edit{% endif %} {{ view.model|default:"" }}{% endblock %}
+{% block dash_title %}{% if mode == "create" %}Add{% else %}Edit{% endif %} {{ model_verbose|default:"" }}{% endblock %}
 {% block dash_heading %}{% if mode == "create" %}Add new record{% else %}Edit record{% endif %}{% endblock %}
 
 {% block dash_content %}
