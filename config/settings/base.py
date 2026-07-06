@@ -72,8 +72,6 @@ MIDDLEWARE = [
     "core.middleware.AuditLogMiddleware",
 ]
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
 
 ROOT_URLCONF = "config.urls"
 
@@ -176,12 +174,85 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATICFILES_STORAGE = (
-    "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
-)
-
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# --- File storage (Django >= 5.1 uses the STORAGES dict; the old
+# DEFAULT_FILE_STORAGE / STATICFILES_STORAGE settings are ignored) ---------
+#
+# All user uploads (logos, hero images, news covers, program covers, gallery
+# photos, team photos, favicons — every ImageField/FileField) go to a MinIO
+# bucket via the S3 API. Set MEDIA_STORAGE=local in .env only for offline
+# development without a MinIO instance.
+
+MEDIA_STORAGE = config("MEDIA_STORAGE", default="minio")
+
+if MEDIA_STORAGE == "minio":
+    # boto3 >= 1.36 defaults to streaming uploads with trailing checksums
+    # (aws-chunked encoding). Reverse proxies in front of MinIO (Cloudflare,
+    # nginx/CapRover) often re-buffer the body, which breaks that format and
+    # yields "XAmzContentSHA256Mismatch" on every upload. These env vars tell
+    # botocore to only add checksums when the operation requires them —
+    # plain, proxy-safe PUTs.
+    os.environ.setdefault("AWS_REQUEST_CHECKSUM_CALCULATION", "when_required")
+    os.environ.setdefault("AWS_RESPONSE_CHECKSUM_VALIDATION", "when_required")
+
+    _minio_endpoint = config("MINIO_ENDPOINT_URL")            # e.g. http://srv-captain--minio:9000
+    if not _minio_endpoint.startswith(("http://", "https://")):
+        # boto3 raises "Invalid endpoint" for scheme-less URLs — assume https.
+        _minio_endpoint = f"https://{_minio_endpoint}"
+
+    _minio_options = {
+        "endpoint_url": _minio_endpoint,
+        "access_key": config("MINIO_ACCESS_KEY"),
+        "secret_key": config("MINIO_SECRET_KEY"),
+        "bucket_name": config("MINIO_BUCKET", default="tdx-media"),
+        "region_name": config("MINIO_REGION", default="us-east-1"),
+        # MinIO requires path-style addressing (bucket in the path, not the
+        # hostname) and Signature V4.
+        "addressing_style": "path",
+        "signature_version": "s3v4",
+        # Never overwrite an existing object with the same name — mirrors
+        # FileSystemStorage behaviour (a suffix is appended on collision).
+        "file_overwrite": False,
+        "default_acl": None,
+        # True (default): media URLs are time-limited signed URLs, so the
+        # bucket can stay fully private. Set False only together with
+        # MINIO_CUSTOM_DOMAIN and a public-read bucket policy.
+        "querystring_auth": config("MINIO_QUERYSTRING_AUTH", default=True, cast=bool),
+    }
+    # Public host for browser-facing URLs (e.g. minio.example.com/tdx-media).
+    # When set, URLs use this domain instead of the (possibly internal)
+    # endpoint above.
+    _minio_custom_domain = config("MINIO_CUSTOM_DOMAIN", default="")
+    if _minio_custom_domain:
+        _minio_options["custom_domain"] = _minio_custom_domain
+        _minio_options["url_protocol"] = config("MINIO_URL_PROTOCOL", default="https:")
+
+    _default_storage = {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": _minio_options,
+    }
+
+    # Origin the browser loads media from — appended to the CSP img-src by
+    # core.middleware.SecurityHeadersMiddleware so uploaded images render.
+    if _minio_custom_domain:
+        MEDIA_CSP_ORIGIN = f"{_minio_options['url_protocol']}//{_minio_custom_domain.split('/')[0]}"
+    else:
+        MEDIA_CSP_ORIGIN = _minio_options["endpoint_url"].rstrip("/")
+else:
+    _default_storage = {"BACKEND": "django.core.files.storage.FileSystemStorage"}
+    MEDIA_CSP_ORIGIN = ""  # local /media/ is already covered by img-src 'self'
+
+STORAGES = {
+    "default": _default_storage,
+    # WhiteNoise compressed+hashed static files (previously configured via
+    # the removed STATICFILES_STORAGE setting, so it was silently inactive
+    # on Django >= 5.1 — now restored).
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024

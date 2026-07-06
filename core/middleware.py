@@ -60,10 +60,17 @@ class SecurityHeadersMiddleware(MiddlewareMixin):
     """
 
     def process_response(self, request, response):
+        # Uploaded media (logos, covers, gallery photos) is served from the
+        # MinIO origin configured in settings; it must be whitelisted in
+        # img-src or the browser will refuse to render any uploaded image.
+        media_origin = getattr(settings, "MEDIA_CSP_ORIGIN", "")
+        img_src = "img-src 'self' data: https://*.tile.openstreetmap.org https://tile.openstreetmap.org"
+        if media_origin:
+            img_src += f" {media_origin}"
         response.setdefault(
             "Content-Security-Policy",
             "default-src 'self'; "
-            "img-src 'self' data: https://*.tile.openstreetmap.org https://tile.openstreetmap.org; "
+            f"{img_src}; "
             "style-src 'self' 'unsafe-inline'; "
             "script-src 'self'; "
             "font-src 'self'; "
