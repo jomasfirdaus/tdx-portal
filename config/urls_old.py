@@ -20,7 +20,6 @@ urlpatterns = [
     path("news/", include("news.urls")),
     path("gallery/", include("gallery.urls")),
     path("contact/", include("contact.urls")),
-    path("appointments/", include("appointments.urls")),
     path("accounts/", include("accounts.urls")),
     path(f"{settings.DASHBOARD_URL_PREFIX}/", include("dashboard.urls")),
     path("robots.txt", robots_txt),

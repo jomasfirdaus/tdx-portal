@@ -21,15 +21,11 @@ urlpatterns = [
     path("messages/", views.message_list, name="message_list"),
     path("messages/<int:pk>/", views.message_detail, name="message_detail"),
 
-    path("appointments/", views.appointment_list, name="appointment_list"),
-    path("appointments/<int:pk>/", views.appointment_detail, name="appointment_detail"),
-
     path("audit-log/", views.audit_log, name="audit_log"),
 ]
 
 urlpatterns += crud_urls(views.location_crud, "location")
 urlpatterns += crud_urls(views.service_area_crud, "service_area")
-urlpatterns += crud_urls(views.appointment_slot_crud, "appointment_slot")
 urlpatterns += crud_urls(views.core_value_crud, "core_value")
 urlpatterns += crud_urls(views.statistic_crud, "statistic")
 urlpatterns += crud_urls(views.department_crud, "department")

@@ -1,0 +1,43 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block dash_title %}Appointment{% endblock %}
+{% block dash_heading %}Appointment — {{ appointment.full_name }}{% endblock %}
+{% block dash_content %}
+<div class="dash-card" style="max-width:640px;">
+  <p><strong>Service Area:</strong> {{ appointment.slot.service_area.name_en }}</p>
+  <p><strong>Slot:</strong> {{ appointment.slot.get_day_of_week_display }}, {{ appointment.slot.start_time|time:"H:i" }}&ndash;{{ appointment.slot.end_time|time:"H:i" }}</p>
+  <p><strong>Appointment Date:</strong> {{ appointment.appointment_date|date:"l, d M Y" }}</p>
+  {% if appointment.location %}<p><strong>Location:</strong> {{ appointment.location.name_en }}</p>{% endif %}
+
+  <hr style="border:none;border-top:1px solid var(--border);margin:18px 0;">
+
+  <p><strong>Patient Name:</strong> {{ appointment.full_name }}</p>
+  <p><strong>Email:</strong> <a href="mailto:{{ appointment.email }}">{{ appointment.email }}</a></p>
+  <p><strong>Phone:</strong> {{ appointment.phone }}</p>
+  <p><strong>Notes:</strong></p>
+  <p style="white-space:pre-line;">{{ appointment.notes|default:"—" }}</p>
+
+  <hr style="border:none;border-top:1px solid var(--border);margin:18px 0;">
+
+  <p><strong>Status:</strong>
+    <span class="badge {% if appointment.status == 'pending' %}badge-planned{% elif appointment.status == 'confirmed' %}badge-ongoing{% elif appointment.status == 'completed' %}badge-completed{% else %}badge-planned{% endif %}">
+      {{ appointment.get_status_display }}
+    </span>
+  </p>
+  <p><strong>Requested:</strong> {{ appointment.created_at|date:"d M Y H:i" }}</p>
+
+  <form method="post" style="margin-top:18px;">
+    {% csrf_token %}
+    <div class="field-group">
+      <label class="field-label" for="status">Update Status</label>
+      <select name="status" id="status" class="field-input">
+        {% for value, label in status_choices %}
+          <option value="{{ value }}" {% if value == appointment.status %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Update Status</button>
+  </form>
+
+  <a href="{% url 'dashboard:appointment_list' %}" class="btn btn-ghost" style="margin-top:12px;">&larr; Back to appointments</a>
+</div>
+{% endblock %}

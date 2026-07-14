@@ -155,12 +155,6 @@ class ServiceArea(TimeStampedModel):
     order = models.PositiveSmallIntegerField(default=0, db_index=True)
     is_active = models.BooleanField(default=True, db_index=True)
 
-    supports_appointment = models.BooleanField(
-        default=False,
-        db_index=True,
-        help_text="If enabled, this service can be booked online through the Appointment module.",
-    )
-
     class Meta:
         ordering = ["order", "id"]
         indexes = [models.Index(fields=["is_active", "order"])]

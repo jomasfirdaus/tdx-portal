@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load static tdx_extras %}
+{% block title %}{% t "appointment.title" %} — {{ site_profile.org_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <div class="breadcrumb"><a href="{% url 'core:home' %}">{% t "nav.home" %}</a> / {% t "nav.appointment" %}</div>
+    <h1>{% t "appointment.title" %}</h1>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container" style="max-width:640px;">
+    <div class="card">
+      <h2>{% t "appointment.form_title" %}</h2>
+      <form method="post" novalidate id="appointment-form"
+            data-hint-select="{% t 'appointment.hint_select_service_date' %}"
+            data-hint-loading="{% t 'appointment.loading_slots' %}"
+            data-hint-empty="{% t 'appointment.no_slots_available' %}"
+            data-hint-error="{% t 'appointment.slots_fetch_error' %}"
+            data-spots-left-template="{% t 'appointment.spots_left' %}"
+            data-availability-url="{% url 'appointments:availability' %}">
+        {% csrf_token %}
+        <div class="honeypot-field" aria-hidden="true">
+          {{ form.website }}
+        </div>
+        {{ form.ts }}
+
+        <div class="field-group">
+          <label class="field-label" for="{{ form.service_area.id_for_label }}">{% t "appointment.field_service_area" %}</label>
+          {{ form.service_area }}
+          {% if form.service_area.errors %}<div class="field-error">{{ form.service_area.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="{{ form.appointment_date.id_for_label }}">{% t "appointment.field_date" %}</label>
+          {{ form.appointment_date }}
+          {% if form.appointment_date.errors %}<div class="field-error">{{ form.appointment_date.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="{{ form.slot.id_for_label }}">{% t "appointment.field_slot" %}</label>
+          {{ form.slot }}
+          <div class="field-hint" id="slot-hint" aria-live="polite">{% t "appointment.hint_select_service_date" %}</div>
+          {% if form.slot.errors %}<div class="field-error">{{ form.slot.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="{{ form.location.id_for_label }}">{% t "appointment.field_location" %}</label>
+          {{ form.location }}
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="{{ form.full_name.id_for_label }}">{% t "appointment.field_name" %}</label>
+          {{ form.full_name }}
+          {% if form.full_name.errors %}<div class="field-error">{{ form.full_name.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="{{ form.email.id_for_label }}">{% t "appointment.field_email" %}</label>
+          {{ form.email }}
+          {% if form.email.errors %}<div class="field-error">{{ form.email.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="{{ form.phone.id_for_label }}">{% t "appointment.field_phone" %}</label>
+          {{ form.phone }}
+          {% if form.phone.errors %}<div class="field-error">{{ form.phone.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="{{ form.notes.id_for_label }}">{% t "appointment.field_notes" %}</label>
+          {{ form.notes }}
+        </div>
+
+        {% if form.non_field_errors %}<div class="alert alert-error">{{ form.non_field_errors.0 }}</div>{% endif %}
+        <button type="submit" class="btn btn-primary btn-block">{% t "appointment.submit" %}</button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/appointments.js' %}"></script>
+{% endblock %}

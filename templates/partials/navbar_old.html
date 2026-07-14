@@ -22,7 +22,6 @@
       <a href="{% url 'news:list' %}" class="{% if 'news' in request.path %}active{% endif %}">{% t "nav.news" %}</a>
       <a href="{% url 'gallery:list' %}" class="{% if 'gallery' in request.path %}active{% endif %}">{% t "nav.gallery" %}</a>
       <a href="{% url 'contact:contact' %}" class="{% if 'contact' in request.path %}active{% endif %}">{% t "nav.contact" %}</a>
-      <a href="{% url 'appointments:appointment' %}" class="{% if 'appointments' in request.path %}active{% endif %}">{% t "nav.appointment" %}</a>
     </nav>
 
     <div class="nav-actions">

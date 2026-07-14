@@ -1,5 +1,3 @@
-import logging
-
 from django.contrib import messages
 from django.core.cache import cache
 from django.shortcuts import get_object_or_404, redirect, render
@@ -7,7 +5,6 @@ from django.urls import reverse_lazy
 from django.views.generic import UpdateView
 
 from accounts.models import AdminUser, LoginActivity
-from appointments.models import AppointmentRequest, AppointmentSlot, AppointmentStatus
 from contact.models import ContactMessage
 from core.models import Location, SiteProfile
 from gallery.models import Album, Photo
@@ -17,17 +14,15 @@ from structure.models import TeamMember
 
 from .crud import build_crud_views, group_form_fields
 from .forms import (
-    AdminUserForm, AlbumForm, AppointmentSlotForm, CoreValueForm, DepartmentForm,
-    NewsCategoryForm, NewsPostForm, PhotoForm, ProgramCategoryForm, ProgramForm,
-    ServiceAreaForm, LocationForm, SiteProfileForm, StatisticForm, TeamMemberForm,
+    AdminUserForm, AlbumForm, CoreValueForm, DepartmentForm, NewsCategoryForm,
+    NewsPostForm, PhotoForm, ProgramCategoryForm, ProgramForm, ServiceAreaForm,
+    LocationForm, SiteProfileForm, StatisticForm, TeamMemberForm,
 )
 from .mixins import StaffRequiredMixin, SuperAdminRequiredMixin
 from core.models import CoreValue, ServiceArea, Statistic
 from structure.models import Department
 from programs.models import ProgramCategory
 from news.models import NewsCategory
-
-security_logger = logging.getLogger("tdx.security")
 
 
 def dashboard_home(request):
@@ -92,77 +87,6 @@ def message_detail(request, pk):
         obj.is_read = True
         obj.save(update_fields=["is_read"])
     return render(request, "dashboard/messages/detail.html", {"message_obj": obj})
-
-
-# --- Appointment requests -------------------------------------------------
-# Deliberately NOT registered through build_crud_views(): a booking is
-# patient-submitted data, not free-form editable content, so — same as
-# ContactMessage above — staff get a review/status-change flow instead of a
-# generic edit form that would let slot/date/contact details be silently
-# rewritten.
-def appointment_list(request):
-    if not request.user.is_authenticated:
-        return redirect("accounts:login")
-    qs = AppointmentRequest.objects.select_related("slot__service_area", "location").all()
-    status_filter = request.GET.get("status", "").strip()
-    if status_filter in AppointmentStatus.values:
-        qs = qs.filter(status=status_filter)
-    from django.core.paginator import Paginator
-    page_obj = Paginator(qs, 20).get_page(request.GET.get("page"))
-    return render(
-        request,
-        "dashboard/appointments/list.html",
-        {
-            "page_obj": page_obj,
-            "status_choices": AppointmentStatus.choices,
-            "status_filter": status_filter,
-        },
-    )
-
-
-def appointment_detail(request, pk):
-    if not request.user.is_authenticated:
-        return redirect("accounts:login")
-    obj = get_object_or_404(
-        AppointmentRequest.objects.select_related("slot__service_area", "location"), pk=pk
-    )
-
-    if request.method == "POST":
-        new_status = request.POST.get("status")
-        if new_status in AppointmentStatus.values:
-            old_status = obj.status
-            obj.status = new_status
-            obj.save(update_fields=["status", "updated_at"])
-            # Reuses the same logger AuditLogMiddleware writes dashboard
-            # access records to — this is the minimal addition needed to
-            # make status changes traceable, not a new audit subsystem.
-            # NOTE: this still only produces a console/stdout log line, not
-            # a queryable in-dashboard history — see the caveat in chat.
-            security_logger.info(
-                "appointment_status_changed id=%s from=%s to=%s by=%s",
-                obj.pk, old_status, new_status, request.user.username,
-            )
-            messages.success(request, "Appointment status updated.")
-            return redirect("dashboard:appointment_detail", pk=obj.pk)
-        messages.error(request, "Invalid status value.")
-
-    return render(
-        request,
-        "dashboard/appointments/detail.html",
-        {"appointment": obj, "status_choices": AppointmentStatus.choices},
-    )
-
-
-# --- Appointment schedule (AppointmentSlot) — plain generic CRUD ----------
-# Unlike AppointmentRequest above, a slot is staff-authored configuration
-# data (like Location/ServiceArea), so the standard build_crud_views() set
-# is the right fit here.
-appointment_slot_crud = build_crud_views(
-    model=AppointmentSlot, form_class=AppointmentSlotForm, url_namespace="appointment_slot",
-    template_folder="generic",
-    list_display=["service_area", "get_day_of_week_display", "start_time", "end_time", "capacity", "is_active"],
-    search_fields=[], ordering=["service_area", "day_of_week", "start_time"],
-)
 
 
 # --- Staff accounts (super admin only) ----------------------------------

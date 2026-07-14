@@ -4,7 +4,6 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from accounts.models import AdminUser
-from appointments.models import AppointmentSlot
 from core.models import CoreValue, Location, ServiceArea, SiteProfile, Statistic
 from gallery.models import Album, Photo
 from news.models import NewsCategory, NewsPost
@@ -156,16 +155,6 @@ class PhotoForm(ImageValidationMixin):
     class Meta:
         model = Photo
         exclude = ["created_at", "updated_at"]
-
-
-class AppointmentSlotForm(forms.ModelForm):
-    class Meta:
-        model = AppointmentSlot
-        exclude = ["created_at", "updated_at"]
-        widgets = {
-            "start_time": forms.TimeInput(attrs={"type": "time", "class": "field-input"}),
-            "end_time": forms.TimeInput(attrs={"type": "time", "class": "field-input"}),
-        }
 
 
 class AdminUserForm(forms.ModelForm):

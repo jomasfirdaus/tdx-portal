@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     "news",
     "gallery",
     "contact",
-    "appointments",
     "dashboard",
 ]
 
@@ -292,14 +291,6 @@ CACHES = {
 # --------------------------------------------------------------------------
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
-# NOTE: DEFAULT_FROM_EMAIL and CONTACT_NOTIFY_EMAIL were previously
-# referenced by contact/views.py but never defined here, so send_mail()
-# there has been silently failing (caught by a broad except). Defined here
-# now, and reused as the default for APPOINTMENT_NOTIFY_EMAIL below.
-DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="TDx Website <no-reply@tdx.tl>")
-CONTACT_NOTIFY_EMAIL = config("CONTACT_NOTIFY_EMAIL", default="info@tdx.tl")
-APPOINTMENT_NOTIFY_EMAIL = config("APPOINTMENT_NOTIFY_EMAIL", default=CONTACT_NOTIFY_EMAIL)
 
 
 # --------------------------------------------------------------------------
