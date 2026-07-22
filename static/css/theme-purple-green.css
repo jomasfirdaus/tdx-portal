@@ -19,6 +19,13 @@
   /* SUCCESS aligned with health green */
   --success: #22C55E !important;
 
+  /* Plain/background areas get a light lavender wash instead of the
+     original teal-tinted neutral, so purple shows up beyond just buttons
+     and links. --bg/--surface stay neutral (white/near-white) — body
+     copy sits on those, and a tinted large background would cut into
+     text contrast. */
+  --bg-alt: #F5F1FC !important;
+
 }
 
 /* =========================

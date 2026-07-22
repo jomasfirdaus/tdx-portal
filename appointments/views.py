@@ -60,6 +60,8 @@ def _notify_staff(appointment):
 
 
 def _notify_requester(appointment):
+    if not appointment.email:
+        return
     slot = appointment.slot
     send_mail(
         subject="Your TDx appointment request has been received",

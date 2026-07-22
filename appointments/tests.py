@@ -18,6 +18,7 @@ from django.db.models.deletion import ProtectedError
 from django.test import TestCase, TransactionTestCase
 from django.utils import timezone
 
+from appointments.forms import AppointmentForm
 from appointments.models import (
     AppointmentRequest,
     AppointmentSlot,
@@ -309,6 +310,11 @@ class AppointmentBookingCapacityTests(TestCase):
         self.assertEqual(AppointmentRequest.objects.count(), 1)
         self.assertEqual(appointment.status, AppointmentStatus.PENDING)
 
+    def test_booking_without_email_succeeds(self):
+        appointment = self._book(email="")
+        self.assertEqual(AppointmentRequest.objects.count(), 1)
+        self.assertEqual(appointment.email, "")
+
     def test_booking_up_to_capacity_succeeds(self):
         self._book(email="a@example.com")
         self._book(email="b@example.com")
@@ -433,3 +439,44 @@ class AppointmentBookingRaceConditionTests(TransactionTestCase):
             .count(),
             1,
         )
+
+
+class AppointmentFormTests(TestCase):
+    """Covers AppointmentForm's own required/optional field rules — the
+    layer that decides what the public booking page enforces before a
+    submission ever reaches AppointmentRequest.create_if_available()."""
+
+    def setUp(self):
+        # supports_appointment must be explicit — it defaults to False, and
+        # AppointmentForm.__init__ filters both the slot and service_area
+        # querysets down to bookable service areas only.
+        self.service_area = make_service_area(supports_appointment=True)
+        self.slot = AppointmentSlot.objects.create(
+            service_area=self.service_area,
+            day_of_week=DayOfWeek.MONDAY,
+            start_time=datetime.time(9, 0),
+            end_time=datetime.time(10, 0),
+            capacity=2,
+        )
+        self.monday = next_weekday(DayOfWeek.MONDAY)
+
+    def _form_data(self, **overrides):
+        data = dict(
+            service_area=self.service_area.pk,
+            slot=self.slot.pk,
+            appointment_date=self.monday.isoformat(),
+            full_name="Maria Soares",
+            email="maria@example.com",
+            phone="+670 7723 1234",
+        )
+        data.update(overrides)
+        return AppointmentForm(data)
+
+    def test_email_is_not_required(self):
+        form = self._form_data(email="")
+        self.assertTrue(form.is_valid(), form.errors)
+
+    def test_invalid_email_format_still_rejected(self):
+        form = self._form_data(email="not-an-email")
+        self.assertFalse(form.is_valid())
+        self.assertIn("email", form.errors)

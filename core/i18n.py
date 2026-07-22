@@ -91,7 +91,7 @@ STRINGS = {
     "appointment.field_location": {"en": "Preferred location (optional)", "tet": "Fatin favoritu (opsional)", "pt": "Local preferido (opcional)"},
     "appointment.field_date": {"en": "Date", "tet": "Data", "pt": "Data"},
     "appointment.field_name": {"en": "Full name", "tet": "Naran kompletu", "pt": "Nome completo"},
-    "appointment.field_email": {"en": "Email address", "tet": "Email", "pt": "Endereço de email"},
+    "appointment.field_email": {"en": "Email address (optional)", "tet": "Email (opsional)", "pt": "Endereço de email (opcional)"},
     "appointment.field_phone": {"en": "Phone", "tet": "Telefone", "pt": "Telefone"},
     "appointment.field_notes": {"en": "Notes (optional)", "tet": "Nota (opsional)", "pt": "Notas (opcional)"},
     "appointment.submit": {"en": "Request appointment", "tet": "Halo pedidu", "pt": "Pedir marcação"},
@@ -131,6 +131,7 @@ STRINGS = {
     "location.get_directions": {"en": "Get Directions", "tet": "Hetan Direksaun", "pt": "Obter Direções"},
     "location.view_map": {"en": "View on map", "tet": "Haree iha mapa", "pt": "Ver no mapa"},
 
+    "footer.motto": {"en": "Good health for a good life", "tet": "Saúde diak, ba moris diak", "pt": "Boa saúde para uma vida melhor"},
     "footer.rights": {"en": "All rights reserved.", "tet": "Direitu hotu rezerva.", "pt": "Todos os direitos reservados."},
     "footer.quicklinks": {"en": "Quick Links", "tet": "Ligasaun Lalais", "pt": "Links Rápidos"},
     "footer.follow": {"en": "Follow us", "tet": "Tuir ami", "pt": "Siga-nos"},

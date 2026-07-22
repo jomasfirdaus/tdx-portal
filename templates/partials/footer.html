@@ -5,6 +5,7 @@
       <div class="footer-brand">
         <h4>{{ site_profile.org_name }}</h4>
         <p>{% tf site_profile "tagline" %}</p>
+        <p class="footer-motto">{% t "footer.motto" %}</p>
         <div class="social-row">
           {% if site_profile.facebook_url %}<a href="{{ site_profile.facebook_url }}" aria-label="Facebook" target="_blank" rel="noopener noreferrer">{% icon "facebook" %}</a>{% endif %}
           {% if site_profile.instagram_url %}<a href="{{ site_profile.instagram_url }}" aria-label="Instagram" target="_blank" rel="noopener noreferrer">{% icon "instagram" %}</a>{% endif %}

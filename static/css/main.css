@@ -1,8 +1,8 @@
 /* =========================================================================
    TDx — Timor Diagnostics
    Design language: "diagnostic precision" — a clinical petrol teal paired
-   with warm Timor-Leste gold, editorial serif headings over a clean sans
-   body, specimen-tag data chips, and a pulse-line motif that nods to lab
+   with warm Timor-Leste gold, Arial throughout for headings and body,
+   specimen-tag data chips, and a pulse-line motif that nods to lab
    readouts without tipping into medical cliché (no crosses, no generic
    stock-photo blues).
    ========================================================================= */
@@ -29,8 +29,8 @@
   --success: #4C8C6B;
 
   /* --- Type --- */
-  --font-display: Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', ui-serif, serif;
-  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-display: Arial, Helvetica, sans-serif;
+  --font-body: Arial, Helvetica, sans-serif;
   --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
 
   /* --- Layout --- */
@@ -62,6 +62,7 @@ body {
   font-family: var(--font-body);
   color: var(--ink);
   background: var(--bg);
+  font-size: 14px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
@@ -73,9 +74,9 @@ h1, h2, h3, h4 {
   margin: 0 0 0.5em;
   letter-spacing: -0.01em;
 }
-h1 { font-size: clamp(2.1rem, 4vw, 3.4rem); font-weight: 700; }
-h2 { font-size: clamp(1.6rem, 2.6vw, 2.3rem); font-weight: 700; }
-h3 { font-size: 1.3rem; font-weight: 700; }
+h1 { font-size: 22px; font-weight: 700; }
+h2 { font-size: 18px; font-weight: 700; }
+h3 { font-size: 16px; font-weight: 700; }
 h4 { font-size: 1.05rem; font-weight: 700; }
 p { margin: 0 0 1em; color: var(--ink-soft); }
 a { color: var(--primary); text-decoration: none; }
@@ -219,7 +220,7 @@ ul, ol { padding-left: 1.2em; color: var(--ink-soft); }
   display: flex; align-items: center; justify-content: center; margin-bottom: 16px; flex-shrink: 0;
 }
 .card-icon svg { width: 22px; height: 22px; }
-.card h3 { margin-bottom: 8px; font-size: 1.12rem; }
+.card h3 { margin-bottom: 8px; }
 .card p { font-size: 0.94rem; margin-bottom: 0; }
 .card-value-label { font-size: 0.78rem; color: var(--accent-dark); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 14px; display: block; }
 
@@ -228,7 +229,7 @@ ul, ol { padding-left: 1.2em; color: var(--ink-soft); }
 .media-thumb { aspect-ratio: 16/10; background: var(--bg-alt) center/cover no-repeat; position: relative; }
 .media-thumb .placeholder-icon { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--ink-faint); }
 .media-body { padding: 20px 22px 22px; display: flex; flex-direction: column; flex: 1; }
-.media-body h3 { font-size: 1.08rem; margin-bottom: 10px; }
+.media-body h3 { margin-bottom: 10px; }
 .media-body p { font-size: 0.9rem; flex: 1; }
 .media-meta { display: flex; align-items: center; gap: 10px; font-size: 0.78rem; color: var(--ink-faint); font-family: var(--font-mono); margin-bottom: 10px; }
 
@@ -283,6 +284,7 @@ ul, ol { padding-left: 1.2em; color: var(--ink-soft); }
 .site-footer a:hover { color: #fff; }
 .footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 40px; }
 .footer-brand p { color: #A9C6C0; font-size: 0.9rem; }
+.footer-motto { font-style: italic; color: #fff; font-weight: 600; }
 .footer-links { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 9px; }
 .footer-bottom { border-top: 1px solid rgba(255,255,255,0.12); margin-top: 40px; padding-top: 22px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; font-size: 0.82rem; color: #9FBDB6; }
 .social-row { display: flex; gap: 10px; }

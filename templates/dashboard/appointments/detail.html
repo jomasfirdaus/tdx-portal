@@ -11,7 +11,7 @@
   <hr style="border:none;border-top:1px solid var(--border);margin:18px 0;">
 
   <p><strong>Patient Name:</strong> {{ appointment.full_name }}</p>
-  <p><strong>Email:</strong> <a href="mailto:{{ appointment.email }}">{{ appointment.email }}</a></p>
+  <p><strong>Email:</strong> {% if appointment.email %}<a href="mailto:{{ appointment.email }}">{{ appointment.email }}</a>{% else %}—{% endif %}</p>
   <p><strong>Phone:</strong> {{ appointment.phone }}</p>
   <p><strong>Notes:</strong></p>
   <p style="white-space:pre-line;">{{ appointment.notes|default:"—" }}</p>

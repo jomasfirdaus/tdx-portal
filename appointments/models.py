@@ -118,7 +118,7 @@ class AppointmentRequest(TimeStampedModel):
     appointment_date = models.DateField()
 
     full_name = models.CharField(max_length=150)
-    email = models.EmailField()
+    email = models.EmailField(blank=True)
     phone = models.CharField(max_length=30, validators=[phone_validator])
     notes = models.TextField(blank=True)
 
