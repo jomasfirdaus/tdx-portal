@@ -21,10 +21,11 @@
       </div>
     </div>
     <div class="hero-media">
+      {% if profile.hero_image %}
+      <img src="{{ profile.hero_image.url }}" alt="{{ profile.org_name }}" class="hero-visual" loading="lazy">
+      {% endif %}
       <div class="hero-card">
-        {% if profile.hero_image %}
-        <img src="{{ profile.hero_image.url }}" alt="{{ profile.org_name }}" class="hero-image" loading="lazy">
-        {% else %}
+        {% if not profile.hero_image %}
         <svg class="pulse-line" viewBox="0 0 400 64" preserveAspectRatio="none">
           <path d="M0 32 L60 32 L80 8 L100 56 L120 20 L140 44 L160 32 L400 32" />
         </svg>
