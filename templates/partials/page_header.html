@@ -1,0 +1,20 @@
+{% load tdx_extras %}
+{% comment %}
+Reusable page header banner — every public page that doesn't need bespoke
+per-item content (Home's hero, or a detail page's own meta line) renders its
+header through this single partial via {% page_header "page_key" %}.
+Background image, overlay, text color, and height all come from the
+matching PageHeader row (Dashboard -> Page Headers); an inactive or missing
+row falls back to the plain banner below.
+{% endcomment %}
+<div class="page-header page-header--{{ header.height|default:"md" }}"
+     {% if header.has_visual_style %}style="{% if header.background_image %}background-image:url('{{ header.background_image.url }}');{% endif %}--header-overlay-color:{{ header.overlay_color }};--header-overlay-opacity:{{ header.overlay_opacity_ratio }};--header-text-color:{{ header.text_color }};"{% endif %}>
+  <div class="container">
+    {% if show_breadcrumb %}
+    <div class="breadcrumb"><a href="{% url 'core:home' %}">{% t "nav.home" %}</a> / {{ breadcrumb }}</div>
+    {% endif %}
+    {% if header.logo %}<img src="{{ header.logo.url }}" class="page-header-logo" alt="">{% endif %}
+    <h1>{{ title }}</h1>
+    {% if subtitle %}<p class="page-header-subtitle">{{ subtitle }}</p>{% endif %}
+  </div>
+</div>

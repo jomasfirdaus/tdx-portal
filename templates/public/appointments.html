@@ -3,12 +3,7 @@
 {% block title %}{% t "appointment.title" %} — {{ site_profile.org_name }}{% endblock %}
 
 {% block content %}
-<div class="page-header">
-  <div class="container">
-    <div class="breadcrumb"><a href="{% url 'core:home' %}">{% t "nav.home" %}</a> / {% t "nav.appointment" %}</div>
-    <h1>{% t "appointment.title" %}</h1>
-  </div>
-</div>
+{% page_header "appointments" %}
 
 <section class="section">
   <div class="container" style="max-width:640px;">

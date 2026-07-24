@@ -17,7 +17,7 @@
         {{ field }}
         {% if field.errors %}<div class="field-error">{{ field.errors.0 }}</div>{% endif %}
         {% if field.help_text %}<div class="field-hint">{{ field.help_text|safe }}</div>{% endif %}
-        {% if field_name == "image" or field_name == "photo" or field_name == "cover_image" or field_name == "logo" or field_name == "favicon" or field_name == "hero_image" or field_name == "avatar" %}
+        {% if field_name == "image" or field_name == "photo" or field_name == "cover_image" or field_name == "logo" or field_name == "favicon" or field_name == "background_image" or field_name == "avatar" %}
           {% if field.value %}<div class="field-hint">Current file: {{ field.value }}</div>{% endif %}
         {% endif %}
       </div>

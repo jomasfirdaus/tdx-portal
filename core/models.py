@@ -1,9 +1,14 @@
-from django.core.validators import RegexValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import models
 
 phone_validator = RegexValidator(
     regex=r"^\+?[0-9\s\-\(\)]{6,20}$",
     message="Enter a valid phone number.",
+)
+
+hex_color_validator = RegexValidator(
+    regex=r"^#[0-9A-Fa-f]{6}$",
+    message="Enter a hex color, e.g. #6D28D9.",
 )
 
 
@@ -48,7 +53,6 @@ class SiteProfile(TimeStampedModel):
 
     logo = models.ImageField(upload_to="site/", blank=True, null=True)
     favicon = models.ImageField(upload_to="site/", blank=True, null=True)
-    hero_image = models.ImageField(upload_to="site/", blank=True, null=True)
 
     address_en = models.CharField(max_length=255, blank=True)
     address_tet = models.CharField(max_length=255, blank=True)
@@ -148,6 +152,107 @@ class Location(TimeStampedModel):
         if self.latitude is not None and self.longitude is not None:
             return f"https://www.openstreetmap.org/directions?to={self.latitude}%2C{self.longitude}"
         return ""
+
+
+class PageKey(models.TextChoices):
+    """Every public page a PageHeader row can be attached to. Adding a new
+    public page means adding a value here (and seeding a row for it) —
+    nothing about the header content itself is hardcoded per page."""
+
+    HOME = "home", "Home"
+    PROFILE = "profile", "Profile"
+    VISION_MISSION = "vision_mission", "Vision & Mission"
+    PROGRAMS = "programs", "Programs"
+    STRUCTURE = "structure", "Team & Structure"
+    NEWS = "news", "News"
+    GALLERY = "gallery", "Gallery"
+    CONTACT = "contact", "Contact"
+    APPOINTMENTS = "appointments", "Book Appointment"
+
+
+class HeaderHeight(models.TextChoices):
+    SMALL = "sm", "Small (~240px)"
+    MEDIUM = "md", "Medium (~360px)"
+    LARGE = "lg", "Large (~480px)"
+    FULL = "full", "Full screen"
+
+
+class PageHeader(TimeStampedModel):
+    """
+    Admin-configurable banner shown at the top of every public page (one row
+    per PageKey), rendered through the shared {% page_header %} tag /
+    partials/page_header.html so no page hardcodes its own title, background,
+    or colors. An inactive or missing row falls back to a plain default
+    banner — a page never renders broken because its header hasn't been
+    configured yet.
+    """
+
+    page_key = models.CharField(max_length=30, choices=PageKey.choices, unique=True, db_index=True)
+
+    title_en = models.CharField(max_length=200, blank=True)
+    title_tet = models.CharField(max_length=200, blank=True)
+    title_pt = models.CharField(max_length=200, blank=True)
+
+    subtitle_en = models.CharField(max_length=300, blank=True)
+    subtitle_tet = models.CharField(max_length=300, blank=True)
+    subtitle_pt = models.CharField(max_length=300, blank=True)
+
+    background_image = models.ImageField(upload_to="page_headers/", blank=True, null=True)
+    logo = models.ImageField(
+        upload_to="page_headers/logos/", blank=True, null=True,
+        help_text="Optional watermark/logo shown within the header banner.",
+    )
+
+    overlay_color = models.CharField(max_length=7, default="#2E1065", validators=[hex_color_validator])
+    overlay_opacity = models.PositiveSmallIntegerField(
+        default=60,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        help_text="0-100. Applies whether or not a background image is set.",
+    )
+    text_color = models.CharField(max_length=7, default="#FFFFFF", validators=[hex_color_validator])
+    height = models.CharField(max_length=6, choices=HeaderHeight.choices, default=HeaderHeight.MEDIUM)
+
+    show_breadcrumb = models.BooleanField(default=True)
+    is_active = models.BooleanField(
+        default=True, db_index=True,
+        help_text="When off, the page falls back to a plain default header.",
+    )
+
+    class Meta:
+        verbose_name = "Page Header"
+        ordering = ["page_key"]
+
+    def __str__(self):
+        return self.get_page_key_display()
+
+    @property
+    def overlay_opacity_ratio(self):
+        return self.overlay_opacity / 100
+
+    @property
+    def has_visual_style(self):
+        """Whether this row actually customizes appearance (a background
+        image, or a visible overlay tint). A plain row — the default state
+        for a page nobody has customized yet — leaves text_color unapplied
+        so headings/breadcrumbs keep their normal readable theme colors
+        instead of an arbitrary forced color with nothing to contrast."""
+        return bool(self.background_image) or self.overlay_opacity > 0
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        from django.core.cache import cache
+        cache.delete(f"page_header:{self.page_key}")
+
+    @classmethod
+    def get_for_page(cls, page_key):
+        from django.core.cache import cache
+        cache_key = f"page_header:{page_key}"
+        header = cache.get(cache_key)
+        if header is None:
+            header = cls.objects.filter(page_key=page_key).first()
+            cache.set(cache_key, header if header is not None else False, 300)
+            return header
+        return header or None
 
 
 class ServiceArea(TimeStampedModel):

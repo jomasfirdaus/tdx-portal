@@ -15,7 +15,7 @@
         <label class="field-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
         {{ field }}
         {% if field.errors %}<div class="field-error">{{ field.errors.0 }}</div>{% endif %}
-        {% if field.value and field_name in "logo favicon hero_image" %}<div class="field-hint">Current: {{ field.value }}</div>{% endif %}
+        {% if field.value and field_name in "logo favicon" %}<div class="field-hint">Current: {{ field.value }}</div>{% endif %}
       </div>
       {% endwith %}
     {% endfor %}

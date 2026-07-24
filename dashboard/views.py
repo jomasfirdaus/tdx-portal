@@ -9,7 +9,7 @@ from django.views.generic import UpdateView
 from accounts.models import AdminUser, LoginActivity
 from appointments.models import AppointmentRequest, AppointmentSlot, AppointmentStatus
 from contact.models import ContactMessage
-from core.models import Location, SiteProfile
+from core.models import Location, PageHeader, SiteProfile
 from gallery.models import Album, Photo
 from news.models import NewsPost
 from programs.models import Program
@@ -18,7 +18,7 @@ from structure.models import TeamMember
 from .crud import build_crud_views, group_form_fields
 from .forms import (
     AdminUserForm, AlbumForm, AppointmentSlotForm, CoreValueForm, DepartmentForm,
-    NewsCategoryForm, NewsPostForm, PhotoForm, ProgramCategoryForm, ProgramForm,
+    NewsCategoryForm, NewsPostForm, PageHeaderForm, PhotoForm, ProgramCategoryForm, ProgramForm,
     ServiceAreaForm, LocationForm, SiteProfileForm, StatisticForm, TeamMemberForm,
 )
 from .mixins import StaffRequiredMixin, SuperAdminRequiredMixin
@@ -184,6 +184,12 @@ def audit_log(request):
 
 
 # --- Generic content CRUD sets -------------------------------------------
+page_header_crud = build_crud_views(
+    model=PageHeader, form_class=PageHeaderForm, url_namespace="page_header",
+    template_folder="generic",
+    list_display=["get_page_key_display", "title_en", "height", "is_active"],
+    search_fields=["title_en"], ordering=["page_key"],
+)
 location_crud = build_crud_views(
     model=Location, form_class=LocationForm, url_namespace="location",
     template_folder="generic",

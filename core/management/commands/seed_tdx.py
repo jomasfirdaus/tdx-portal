@@ -12,7 +12,7 @@ Safe to re-run: uses update_or_create / get_or_create throughout.
 """
 from django.core.management.base import BaseCommand
 
-from core.models import CoreValue, Location, ServiceArea, SiteProfile, Statistic
+from core.models import CoreValue, Location, PageHeader, ServiceArea, SiteProfile, Statistic
 from structure.models import Department
 
 
@@ -26,6 +26,7 @@ class Command(BaseCommand):
         self.seed_statistics()
         self.seed_structure()
         self.seed_location()
+        self.seed_page_headers()
         self.stdout.write(self.style.SUCCESS("TDx seed data loaded. Review and refine wording via the dashboard, especially the Tetum/Portuguese columns."))
 
     def seed_profile(self):
@@ -154,6 +155,33 @@ class Command(BaseCommand):
             ),
         )
         self.stdout.write(f"Location: {home_collection} (selectable when booking, hidden from the map)")
+
+    def seed_page_headers(self):
+        # Preserves each page's current appearance exactly (no background
+        # image, no overlay, same dark ink text color as the plain header
+        # every page already had) — staff can then style each one via
+        # Dashboard -> Page Headers without any page going blank/unstyled.
+        PLAIN_DEFAULTS = dict(overlay_opacity=0, text_color="#0E2A2B", height="md", show_breadcrumb=True, is_active=True)
+        pages = [
+            dict(page_key="profile", title_en="Our Profile", title_tet="Ami-nia Perfil", title_pt="O Nosso Perfil"),
+            dict(page_key="vision_mission", title_en="Vision & Mission", title_tet="Vizaun & Misaun", title_pt="Visão e Missão"),
+            dict(page_key="programs", title_en="Programs & Activities", title_tet="Programa & Atividade", title_pt="Programas e Atividades"),
+            dict(page_key="structure", title_en="Team & Structure", title_tet="Ekipa & Estrutura", title_pt="Equipa e Estrutura"),
+            dict(page_key="news", title_en="News & Updates", title_tet="Notísia & Atualizasaun", title_pt="Notícias e Atualizações"),
+            dict(page_key="gallery", title_en="Photo Gallery", title_tet="Galeria Foto", title_pt="Galeria de Fotos"),
+            dict(page_key="contact", title_en="Contact Us", title_tet="Kontaktu Ami", title_pt="Contacte-nos"),
+            dict(page_key="appointments", title_en="Book an Appointment", title_tet="Book Appointment", title_pt="Marcar Consulta"),
+        ]
+        for page in pages:
+            page_key = page.pop("page_key")
+            PageHeader.objects.update_or_create(page_key=page_key, defaults={**PLAIN_DEFAULTS, **page})
+
+        # Home's header only supplies the hero's background/overlay styling
+        # (see templates/public/home.html) — its title/subtitle stay unused,
+        # the tagline/about copy on SiteProfile already covers that slot.
+        PageHeader.objects.get_or_create(page_key="home", defaults=dict(overlay_opacity=0, text_color="#0E2A2B"))
+
+        self.stdout.write("Page headers: 9 pages seeded with their current look (customize via Dashboard → Page Headers)")
 
     def seed_services(self):
         rows = [

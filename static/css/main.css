@@ -172,7 +172,26 @@ ul, ol { padding-left: 1.2em; color: var(--ink-soft); }
 .nav-toggle span { display: block; width: 22px; height: 2px; background: var(--ink); margin: 5px 0; border-radius: 2px; }
 
 /* --- Hero --- */
-.hero { position: relative; overflow: hidden; padding: 88px 0 64px; background: linear-gradient(180deg, #F8FAF8 0%, var(--bg) 100%); }
+/* Background image/overlay/text color are set inline from the "home"
+   PageHeader row (Dashboard -> Page Headers), same mechanism as the inner
+   page headers — see partials/page_header.html. */
+.hero {
+  position: relative; overflow: hidden; padding: 88px 0 64px;
+  background: linear-gradient(180deg, #F8FAF8 0%, var(--bg) 100%);
+  background-size: cover; background-position: center;
+}
+.hero::before {
+  content: ""; position: absolute; inset: 0;
+  background: var(--header-overlay-color, transparent);
+  opacity: var(--header-overlay-opacity, 0);
+  pointer-events: none;
+}
+.hero > .container { position: relative; z-index: 1; }
+.hero[style*="--header-text-color"] .hero-copy h1,
+.hero[style*="--header-text-color"] .eyebrow,
+.hero[style*="--header-text-color"] .lead {
+  color: var(--header-text-color);
+}
 .hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px; align-items: center; }
 .hero-copy p.lead { font-size: 1.14rem; color: var(--ink-soft); max-width: 520px; }
 .hero-cta { display: flex; gap: 14px; margin-top: 30px; flex-wrap: wrap; }
@@ -306,8 +325,40 @@ ul, ol { padding-left: 1.2em; color: var(--ink-soft); }
 .lightbox img { max-width: 90vw; max-height: 85vh; border-radius: 8px; }
 .lightbox-close { position: absolute; top: 24px; right: 28px; color: #fff; font-size: 1.8rem; background: none; border: none; cursor: pointer; }
 
-/* --- Page header (inner pages) --- */
-.page-header { padding: 56px 0 40px; background: var(--bg-alt); border-bottom: 1px solid var(--border); }
+/* --- Page header (inner pages) ---
+   Background image, overlay, and text color are set inline per-page via
+   CSS custom properties (Dashboard -> Page Headers); these rules just
+   define the fallbacks and the height presets. */
+.page-header {
+  position: relative;
+  padding: 56px 0 40px;
+  background-color: var(--bg-alt);
+  background-size: cover;
+  background-position: center;
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+.page-header--sm { padding: 36px 0 24px; }
+.page-header--md { padding: 56px 0 40px; }
+.page-header--lg { padding: 96px 0 64px; }
+.page-header--full { min-height: 100vh; display: flex; align-items: center; padding: 56px 0; }
+.page-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--header-overlay-color, transparent);
+  opacity: var(--header-overlay-opacity, 0);
+  pointer-events: none;
+}
+.page-header > .container { position: relative; z-index: 1; }
+.page-header[style*="--header-text-color"] h1,
+.page-header[style*="--header-text-color"] .breadcrumb,
+.page-header[style*="--header-text-color"] .breadcrumb a,
+.page-header[style*="--header-text-color"] .page-header-subtitle {
+  color: var(--header-text-color);
+}
+.page-header-logo { max-height: 56px; margin-bottom: 16px; }
+.page-header-subtitle { font-size: 1.05rem; margin-top: 10px; max-width: 640px; }
 .breadcrumb { font-size: 0.82rem; color: var(--ink-faint); margin-bottom: 12px; }
 .breadcrumb a { color: var(--ink-faint); }
 .breadcrumb a:hover { color: var(--primary); }

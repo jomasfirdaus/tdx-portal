@@ -2,9 +2,25 @@ from django import template
 from django.utils.safestring import mark_safe
 
 from core.i18n import t as translate
+from core.models import PageHeader
 from core.translation import tr as translate_field
 
 register = template.Library()
+
+# Breadcrumb label for each PageKey that renders through the shared
+# {% page_header %} inclusion tag. This is routing/navigation structure
+# (mirrors the labels already used in the navbar), not admin-editable
+# content — only whether the breadcrumb is shown is a PageHeader field.
+_PAGE_HEADER_BREADCRUMB_KEYS = {
+    "profile": "nav.profile",
+    "vision_mission": "nav.vision_mission",
+    "programs": "nav.programs",
+    "structure": "nav.structure",
+    "news": "nav.news",
+    "gallery": "nav.gallery",
+    "contact": "nav.contact",
+    "appointments": "nav.appointment",
+}
 
 # Small, hand-written icon set (simple geometric strokes) so the project has
 # zero dependency on an external icon font/CDN — keeps the CSP locked to
@@ -90,6 +106,50 @@ def tf_safe(context, obj, field):
     lang = context.get("LANGUAGE", "en")
     value = translate_field(obj, field, lang)
     return mark_safe(value)
+
+
+@register.simple_tag(takes_context=True)
+def get_page_header(context, page_key):
+    """
+    Low-level accessor for pages whose header has bespoke markup around it
+    (Home's hero with CTAs/stats, or a news/program/gallery detail page's
+    per-item meta) but still needs its background image/overlay/text color
+    to come from the same admin-managed PageHeader row as every other page:
+    {% get_page_header "home" as header %} -> PageHeader instance, or None
+    when there's no row yet or it's marked inactive (fall back to a plain
+    default in that case, same rule the {% page_header %} banner uses).
+    """
+    header = PageHeader.get_for_page(page_key)
+    return header if (header and header.is_active) else None
+
+
+@register.inclusion_tag("partials/page_header.html", takes_context=True)
+def page_header(context, page_key, title_override=None, breadcrumb_extra=None):
+    """
+    Full banner: {% page_header "profile" %}. Used by every public page that
+    doesn't need extra per-item content in its header — the reusable
+    component every such page consumes, so none of them hardcode their own
+    title, background, or colors.
+    """
+    lang = context.get("LANGUAGE", "en")
+    header = get_page_header(context, page_key)
+
+    title = title_override or (translate_field(header, "title", lang) if header else "") or translate(
+        _PAGE_HEADER_BREADCRUMB_KEYS.get(page_key, ""), lang
+    )
+    subtitle = translate_field(header, "subtitle", lang) if header else ""
+
+    breadcrumb_label = translate(_PAGE_HEADER_BREADCRUMB_KEYS.get(page_key, ""), lang)
+    breadcrumb = f"{breadcrumb_label} / {breadcrumb_extra}" if breadcrumb_extra else breadcrumb_label
+
+    return {
+        "LANGUAGE": lang,
+        "header": header,
+        "title": title,
+        "subtitle": subtitle,
+        "breadcrumb": breadcrumb,
+        "show_breadcrumb": header.show_breadcrumb if header else True,
+    }
 
 
 @register.simple_tag(takes_context=True)

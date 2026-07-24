@@ -4,9 +4,13 @@
 {% block meta_description %}{% tf post "excerpt" %}{% endblock %}
 
 {% block content %}
-<div class="page-header">
+{% get_page_header "news" as header %}
+<div class="page-header page-header--{{ header.height|default:"md" }}"
+     {% if header.has_visual_style %}style="{% if header.background_image %}background-image:url('{{ header.background_image.url }}');{% endif %}--header-overlay-color:{{ header.overlay_color }};--header-overlay-opacity:{{ header.overlay_opacity_ratio }};--header-text-color:{{ header.text_color }};"{% endif %}>
   <div class="container">
+    {% if not header or header.show_breadcrumb %}
     <div class="breadcrumb"><a href="{% url 'core:home' %}">{% t "nav.home" %}</a> / <a href="{% url 'news:list' %}">{% t "nav.news" %}</a> / {% tf post "title" %}</div>
+    {% endif %}
     <h1>{% tf post "title" %}</h1>
     <div class="media-meta">
       {% icon "calendar" "icon-sm" %} {% t "news.published_on" %} {{ post.published_at|date:"d M Y" }}

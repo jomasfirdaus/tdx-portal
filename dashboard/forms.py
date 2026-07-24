@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 
 from accounts.models import AdminUser
 from appointments.models import AppointmentSlot
-from core.models import CoreValue, Location, ServiceArea, SiteProfile, Statistic
+from core.models import CoreValue, Location, PageHeader, ServiceArea, SiteProfile, Statistic
 from gallery.models import Album, Photo
 from news.models import NewsCategory, NewsPost
 from programs.models import Program, ProgramCategory
@@ -57,6 +57,16 @@ class LocationForm(forms.ModelForm):
         exclude = ["created_at", "updated_at"]
         widgets = {
             "opening_hours_en": TEXTAREA_WIDGET, "opening_hours_tet": TEXTAREA_WIDGET, "opening_hours_pt": TEXTAREA_WIDGET,
+        }
+
+
+class PageHeaderForm(ImageValidationMixin):
+    class Meta:
+        model = PageHeader
+        exclude = ["created_at", "updated_at"]
+        widgets = {
+            "overlay_color": forms.TextInput(attrs={"type": "color"}),
+            "text_color": forms.TextInput(attrs={"type": "color"}),
         }
 
 
