@@ -185,6 +185,14 @@ class PageHeader(TimeStampedModel):
     or colors. An inactive or missing row falls back to a plain default
     banner — a page never renders broken because its header hasn't been
     configured yet.
+
+    background_image fills the decorative panel on the right when set
+    (Dashboard -> Page Headers); when it's empty, the panel falls back to
+    the same purple-to-green look recreated in CSS/SVG
+    (partials/page_header_art.html), so a page never renders with a blank
+    header. "home"'s row ships with a seeded default image (see seed_tdx)
+    reproducing that same fallback look, so Home's approved appearance is
+    unchanged out of the box while still being a real, admin-editable image.
     """
 
     page_key = models.CharField(max_length=30, choices=PageKey.choices, unique=True, db_index=True)
@@ -197,19 +205,33 @@ class PageHeader(TimeStampedModel):
     subtitle_tet = models.CharField(max_length=300, blank=True)
     subtitle_pt = models.CharField(max_length=300, blank=True)
 
+    motto_en = models.CharField(max_length=150, blank=True, help_text="Short italic line under the title, e.g. 'Saúde diak, ba moris diak'.")
+    motto_tet = models.CharField(max_length=150, blank=True)
+    motto_pt = models.CharField(max_length=150, blank=True)
+
+    tagline_en = models.CharField(max_length=150, blank=True, help_text="Smaller line under the motto, e.g. 'Good health for a good life'.")
+    tagline_tet = models.CharField(max_length=150, blank=True)
+    tagline_pt = models.CharField(max_length=150, blank=True)
+
     background_image = models.ImageField(upload_to="page_headers/", blank=True, null=True)
     logo = models.ImageField(
         upload_to="page_headers/logos/", blank=True, null=True,
         help_text="Optional watermark/logo shown within the header banner.",
     )
 
-    overlay_color = models.CharField(max_length=7, default="#2E1065", validators=[hex_color_validator])
-    overlay_opacity = models.PositiveSmallIntegerField(
-        default=60,
-        validators=[MinValueValidator(0), MaxValueValidator(100)],
-        help_text="0-100. Applies whether or not a background image is set.",
+    overlay_color = models.CharField(
+        max_length=7, blank=True, default="#2E1065", validators=[hex_color_validator],
+        help_text="Tints the decorative background panel. Leave blank to use the default purple-to-green look.",
     )
-    text_color = models.CharField(max_length=7, default="#FFFFFF", validators=[hex_color_validator])
+    overlay_opacity = models.PositiveSmallIntegerField(
+        default=40,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        help_text="0-100. Intensity of the decorative background panel.",
+    )
+    text_color = models.CharField(
+        max_length=7, blank=True, default="", validators=[hex_color_validator],
+        help_text="Overrides the title/breadcrumb color. Leave blank to use the theme default.",
+    )
     height = models.CharField(max_length=6, choices=HeaderHeight.choices, default=HeaderHeight.MEDIUM)
 
     show_breadcrumb = models.BooleanField(default=True)
@@ -228,15 +250,6 @@ class PageHeader(TimeStampedModel):
     @property
     def overlay_opacity_ratio(self):
         return self.overlay_opacity / 100
-
-    @property
-    def has_visual_style(self):
-        """Whether this row actually customizes appearance (a background
-        image, or a visible overlay tint). A plain row — the default state
-        for a page nobody has customized yet — leaves text_color unapplied
-        so headings/breadcrumbs keep their normal readable theme colors
-        instead of an arbitrary forced color with nothing to contrast."""
-        return bool(self.background_image) or self.overlay_opacity > 0
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

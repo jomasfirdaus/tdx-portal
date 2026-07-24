@@ -2,6 +2,7 @@ import os
 
 from django import forms
 from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import UploadedFile
 
 from accounts.models import AdminUser
 from appointments.models import AppointmentSlot
@@ -35,7 +36,15 @@ class ImageValidationMixin(forms.ModelForm):
         cleaned = super().clean()
         for field_name, field in self.fields.items():
             if isinstance(field, forms.ImageField):
-                validate_image_file(cleaned.get(field_name))
+                value = cleaned.get(field_name)
+                # Only a freshly-submitted upload needs (re-)validating —
+                # an unchanged field's cleaned value is the existing
+                # FieldFile from the model instance, and checking .size on
+                # that hits the storage backend over the network for no
+                # reason (and can 500 the whole form if that call fails,
+                # e.g. a permissions hiccup on the remote bucket).
+                if isinstance(value, UploadedFile):
+                    validate_image_file(value)
         return cleaned
 
 

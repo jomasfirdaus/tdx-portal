@@ -5,13 +5,19 @@
 {% block content %}
 {% get_page_header "gallery" as header %}
 <div class="page-header page-header--{{ header.height|default:"md" }}"
-     {% if header.has_visual_style %}style="{% if header.background_image %}background-image:url('{{ header.background_image.url }}');{% endif %}--header-overlay-color:{{ header.overlay_color }};--header-overlay-opacity:{{ header.overlay_opacity_ratio }};--header-text-color:{{ header.text_color }};"{% endif %}>
-  <div class="container">
-    {% if not header or header.show_breadcrumb %}
-    <div class="breadcrumb"><a href="{% url 'core:home' %}">{% t "nav.home" %}</a> / <a href="{% url 'gallery:list' %}">{% t "nav.gallery" %}</a> / {% tf album "title" %}</div>
-    {% endif %}
-    <h1>{% tf album "title" %}</h1>
-    {% if album.description_en %}<p style="max-width:640px;">{% tf album "description" %}</p>{% endif %}
+     {% if header %}style="{% if header.overlay_color %}--header-overlay-color:{{ header.overlay_color }};{% endif %}--header-overlay-opacity:{{ header.overlay_opacity_ratio }};{% if header.text_color %}--header-text-color:{{ header.text_color }};{% endif %}"{% endif %}>
+  <div class="page-header-art" aria-hidden="true" {% if header.background_image %}style="background-image:url('{{ header.background_image.url }}');"{% endif %}>{% if not header.background_image %}{% include "partials/page_header_art.html" %}{% endif %}</div>
+  {% if header.logo %}<img src="{{ header.logo.url }}" class="page-header-logo" alt="">{% endif %}
+  <div class="container page-header-inner">
+    <div class="page-header-text{% if header.logo %} has-logo-gutter{% endif %}">
+      {% if not header or header.show_breadcrumb %}
+      <div class="breadcrumb"><a href="{% url 'core:home' %}">{% t "nav.home" %}</a> / <a href="{% url 'gallery:list' %}">{% t "nav.gallery" %}</a> / {% tf album "title" %}</div>
+      {% endif %}
+      <h1>{% tf album "title" %}</h1>
+      {% if album.description_en %}<p style="max-width:640px;">{% tf album "description" %}</p>{% endif %}
+      <p class="page-header-motto">{% header_motto header %} {% icon "heart-pulse" "icon-sm" %}</p>
+      <p class="page-header-tagline">{% header_tagline header %}</p>
+    </div>
   </div>
 </div>
 

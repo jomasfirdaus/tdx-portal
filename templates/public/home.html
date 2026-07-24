@@ -4,13 +4,12 @@
 
 {% block content %}
 
-{% get_page_header "home" as header %}
-<section class="hero"
-          {% if header.has_visual_style %}style="{% if header.background_image %}background-image:url('{{ header.background_image.url }}');{% endif %}--header-overlay-color:{{ header.overlay_color }};--header-overlay-opacity:{{ header.overlay_opacity_ratio }};--header-text-color:{{ header.text_color }};"{% endif %}>
+{% page_header "home" variant="home" %}
+<section class="hero">
   <div class="container hero-grid">
     <div class="hero-copy">
       <div class="eyebrow">{% t "home.hero_eyebrow" %}</div>
-      <h1>{% tf profile "tagline" %}</h1>
+      <h2 class="hero-headline">{% tf profile "tagline" %}</h2>
       <p class="lead">{% tf profile "about" %}</p>
       <div class="hero-cta">
         <a href="{% url 'programs:list' %}" class="btn btn-primary">{% t "home.cta_programs" %} {% icon "arrow-right" "icon icon-sm" %}</a>
@@ -23,15 +22,10 @@
       </div>
     </div>
     <div class="hero-media">
-      {% if header.background_image %}
-      <img src="{{ header.background_image.url }}" alt="{{ profile.org_name }}" class="hero-visual" loading="lazy">
-      {% endif %}
       <div class="hero-card">
-        {% if not header.background_image %}
         <svg class="pulse-line" viewBox="0 0 400 64" preserveAspectRatio="none">
           <path d="M0 32 L60 32 L80 8 L100 56 L120 20 L140 44 L160 32 L400 32" />
         </svg>
-        {% endif %}
         <div class="stat-strip">
           {% for s in stats %}
           <div class="stat-tag">

@@ -172,27 +172,15 @@ ul, ol { padding-left: 1.2em; color: var(--ink-soft); }
 .nav-toggle span { display: block; width: 22px; height: 2px; background: var(--ink); margin: 5px 0; border-radius: 2px; }
 
 /* --- Hero --- */
-/* Background image/overlay/text color are set inline from the "home"
-   PageHeader row (Dashboard -> Page Headers), same mechanism as the inner
-   page headers — see partials/page_header.html. */
+/* Home's brand banner (logo/title/motto/tagline/decorative art) is the
+   same {% page_header %} component every other page uses (variant="home"
+   just swaps in the two-tone stacked title) — see home.html. This section
+   is just Home's own supplementary content (headline, CTAs, stats) below it. */
 .hero {
-  position: relative; overflow: hidden; padding: 88px 0 64px;
   background: linear-gradient(180deg, #F8FAF8 0%, var(--bg) 100%);
-  background-size: cover; background-position: center;
 }
-.hero::before {
-  content: ""; position: absolute; inset: 0;
-  background: var(--header-overlay-color, transparent);
-  opacity: var(--header-overlay-opacity, 0);
-  pointer-events: none;
-}
-.hero > .container { position: relative; z-index: 1; }
-.hero[style*="--header-text-color"] .hero-copy h1,
-.hero[style*="--header-text-color"] .eyebrow,
-.hero[style*="--header-text-color"] .lead {
-  color: var(--header-text-color);
-}
-.hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px; align-items: center; }
+.hero-grid { padding: 40px 0 64px; display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px; align-items: center; }
+.hero-headline { font-size: clamp(1.3rem, 2.4vw, 1.9rem); margin: 0 0 0.5em; }
 .hero-copy p.lead { font-size: 1.14rem; color: var(--ink-soft); max-width: 520px; }
 .hero-cta { display: flex; gap: 14px; margin-top: 30px; flex-wrap: wrap; }
 .hero-media { position: relative; }
@@ -326,15 +314,17 @@ ul, ol { padding-left: 1.2em; color: var(--ink-soft); }
 .lightbox-close { position: absolute; top: 24px; right: 28px; color: #fff; font-size: 1.8rem; background: none; border: none; cursor: pointer; }
 
 /* --- Page header (inner pages) ---
-   Background image, overlay, and text color are set inline per-page via
-   CSS custom properties (Dashboard -> Page Headers); these rules just
-   define the fallbacks and the height presets. */
+   Approved TDC design: a large TDC seal watermark bleeds off the left edge,
+   title/motto/tagline stack to its right, and a purple->green diagonal
+   pattern panel sits confined to the background on the right — never a
+   full-bleed cover photo. overlay_color/overlay_opacity/text_color (Dashboard
+   -> Page Headers) layer on top of this base look as optional per-page
+   fine-tuning; background_image (if set) fills the decorative panel only,
+   not the whole banner. */
 .page-header {
   position: relative;
   padding: 56px 0 40px;
-  background-color: var(--bg-alt);
-  background-size: cover;
-  background-position: center;
+  background: linear-gradient(120deg, var(--primary-light) 0%, var(--surface) 65%);
   border-bottom: 1px solid var(--border);
   overflow: hidden;
 }
@@ -342,23 +332,42 @@ ul, ol { padding-left: 1.2em; color: var(--ink-soft); }
 .page-header--md { padding: 56px 0 40px; }
 .page-header--lg { padding: 96px 0 64px; }
 .page-header--full { min-height: 100vh; display: flex; align-items: center; padding: 56px 0; }
-.page-header::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--header-overlay-color, transparent);
-  opacity: var(--header-overlay-opacity, 0);
-  pointer-events: none;
+
+.page-header-art {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+  background-size: cover; background-position: right center;
 }
-.page-header > .container { position: relative; z-index: 1; }
-.page-header[style*="--header-text-color"] h1,
-.page-header[style*="--header-text-color"] .breadcrumb,
-.page-header[style*="--header-text-color"] .breadcrumb a,
-.page-header[style*="--header-text-color"] .page-header-subtitle {
-  color: var(--header-text-color);
+.page-header-art-svg { width: 100%; height: 100%; display: block; }
+
+.page-header-logo {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  width: 300px; max-width: 42vw; opacity: 0.5; z-index: 0; pointer-events: none;
 }
-.page-header-logo { max-height: 56px; margin-bottom: 16px; }
-.page-header-subtitle { font-size: 1.05rem; margin-top: 10px; max-width: 640px; }
+.page-header-inner { position: relative; z-index: 1; }
+.page-header-text { max-width: 620px; }
+.page-header-text.has-logo-gutter { padding-left: 240px; }
+.page-header h1 { color: var(--header-text-color, var(--primary)); margin: 0; font-size: clamp(1.6rem, 3.4vw, 2.6rem); }
+.page-header .breadcrumb, .page-header .breadcrumb a { color: var(--header-text-color, var(--ink-faint)); }
+.page-header-subtitle { font-size: 1.05rem; margin-top: 8px; max-width: 640px; color: var(--header-text-color, var(--ink-soft)); }
+.page-header-brand-title { margin: 0; line-height: 1.15; }
+.page-header-brand-title .brand-line-primary,
+.page-header-brand-title .brand-line-accent {
+  display: block; font-family: var(--font-display); font-weight: 800;
+  font-size: clamp(1.5rem, 3.2vw, 2.4rem); letter-spacing: -0.01em;
+}
+.page-header-brand-title .brand-line-primary { color: var(--header-text-color, var(--primary)); }
+.page-header-brand-title .brand-line-accent { color: var(--accent-dark); font-size: clamp(1.2rem, 2.6vw, 1.9rem); }
+.page-header-motto {
+  font-style: italic; font-weight: 700; color: var(--accent-dark);
+  font-size: 1.15rem; margin: 14px 0 2px; display: flex; align-items: center; gap: 8px;
+}
+.page-header-tagline { font-style: italic; color: var(--ink-soft); font-size: 0.92rem; margin: 0; }
+
+@media (max-width: 768px) {
+  .page-header-logo { display: none; }
+  .page-header-text.has-logo-gutter { padding-left: 0; }
+}
+
 .breadcrumb { font-size: 0.82rem; color: var(--ink-faint); margin-bottom: 12px; }
 .breadcrumb a { color: var(--ink-faint); }
 .breadcrumb a:hover { color: var(--primary); }
@@ -391,7 +400,7 @@ ul, ol { padding-left: 1.2em; color: var(--ink-soft); }
   .nav-toggle { display: block; }
   .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; }
-  .hero { padding: 56px 0 40px; }
+  .hero-grid { padding: 28px 0 40px; }
   .section { padding: 52px 0; }
   body.nav-open .main-nav {
     display: flex; flex-direction: column; position: absolute; top: var(--header-h); left: 0; right: 0;

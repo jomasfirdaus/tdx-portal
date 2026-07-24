@@ -1,20 +1,41 @@
 {% load tdx_extras %}
 {% comment %}
 Reusable page header banner — every public page that doesn't need bespoke
-per-item content (Home's hero, or a detail page's own meta line) renders its
-header through this single partial via {% page_header "page_key" %}.
-Background image, overlay, text color, and height all come from the
-matching PageHeader row (Dashboard -> Page Headers); an inactive or missing
-row falls back to the plain banner below.
+per-item content (a detail page's own meta line) renders its header through
+this single partial via {% page_header "page_key" %}; Home renders through
+it too via {% page_header "home" variant="home" %} (see home.html).
+
+Approved TDC design (docs/design/home.png, docs/design/others.png): a TDC
+seal watermark on the left, title/motto/tagline stacked to its right, and a
+purple->green decorative panel confined to the background on the right —
+never a full-bleed cover photo. Dashboard -> Page Headers lets staff
+override the overlay/text color, and the decorative panel image itself
+(background_image) per page; when it's not configured, the panel falls
+back to the same look recreated in CSS/SVG (partials/page_header_art.html)
+so a page never renders with a blank header.
 {% endcomment %}
 <div class="page-header page-header--{{ header.height|default:"md" }}"
-     {% if header.has_visual_style %}style="{% if header.background_image %}background-image:url('{{ header.background_image.url }}');{% endif %}--header-overlay-color:{{ header.overlay_color }};--header-overlay-opacity:{{ header.overlay_opacity_ratio }};--header-text-color:{{ header.text_color }};"{% endif %}>
-  <div class="container">
-    {% if show_breadcrumb %}
-    <div class="breadcrumb"><a href="{% url 'core:home' %}">{% t "nav.home" %}</a> / {{ breadcrumb }}</div>
-    {% endif %}
-    {% if header.logo %}<img src="{{ header.logo.url }}" class="page-header-logo" alt="">{% endif %}
-    <h1>{{ title }}</h1>
-    {% if subtitle %}<p class="page-header-subtitle">{{ subtitle }}</p>{% endif %}
+     {% if header %}style="{% if header.overlay_color %}--header-overlay-color:{{ header.overlay_color }};{% endif %}--header-overlay-opacity:{{ header.overlay_opacity_ratio }};{% if header.text_color %}--header-text-color:{{ header.text_color }};{% endif %}"{% endif %}>
+  <div class="page-header-art" aria-hidden="true" {% if header.background_image %}style="background-image:url('{{ header.background_image.url }}');"{% endif %}>{% if not header.background_image %}{% include "partials/page_header_art.html" %}{% endif %}</div>
+  {% if header.logo %}<img src="{{ header.logo.url }}" class="page-header-logo" alt="">{% endif %}
+  <div class="container page-header-inner">
+    <div class="page-header-text{% if header.logo %} has-logo-gutter{% endif %}">
+      {% if show_breadcrumb %}
+      <div class="breadcrumb"><a href="{% url 'core:home' %}">{% t "nav.home" %}</a> / {{ breadcrumb }}</div>
+      {% endif %}
+      {% if variant == "home" %}
+        {% with brand_parts=title|split:" | " %}
+        <h1 class="page-header-brand-title">
+          <span class="brand-line-primary">{{ brand_parts.0 }}</span>
+          {% if brand_parts|length > 1 %}<span class="brand-line-accent">{{ brand_parts.1 }}</span>{% endif %}
+        </h1>
+        {% endwith %}
+      {% else %}
+        <h1>{{ title }}</h1>
+      {% endif %}
+      {% if subtitle %}<p class="page-header-subtitle">{{ subtitle }}</p>{% endif %}
+      <p class="page-header-motto">{{ motto }} {% icon "heart-pulse" "icon-sm" %}</p>
+      <p class="page-header-tagline">{{ tagline }}</p>
+    </div>
   </div>
 </div>

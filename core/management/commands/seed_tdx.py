@@ -10,6 +10,9 @@ for TDx staff to add through the dashboard rather than invented here.
 Run with: python manage.py seed_tdx
 Safe to re-run: uses update_or_create / get_or_create throughout.
 """
+import os
+
+from django.core.files import File
 from django.core.management.base import BaseCommand
 
 from core.models import CoreValue, Location, PageHeader, ServiceArea, SiteProfile, Statistic
@@ -157,11 +160,14 @@ class Command(BaseCommand):
         self.stdout.write(f"Location: {home_collection} (selectable when booking, hidden from the map)")
 
     def seed_page_headers(self):
-        # Preserves each page's current appearance exactly (no background
-        # image, no overlay, same dark ink text color as the plain header
-        # every page already had) — staff can then style each one via
-        # Dashboard -> Page Headers without any page going blank/unstyled.
-        PLAIN_DEFAULTS = dict(overlay_opacity=0, text_color="#0E2A2B", height="md", show_breadcrumb=True, is_active=True)
+        # Matches the approved TDC header design out of the box (seal
+        # watermark, purple->green decorative panel, theme-colored title) —
+        # staff can still fine-tune each page via Dashboard -> Page Headers.
+        DEFAULTS = dict(
+            overlay_opacity=40, text_color="", height="md", show_breadcrumb=True, is_active=True,
+            motto_en="Saúde diak, ba moris diak", motto_tet="Saúde diak, ba moris diak", motto_pt="Saúde diak, ba moris diak",
+            tagline_en="Good health for a good life", tagline_tet="Good health for a good life", tagline_pt="Good health for a good life",
+        )
         pages = [
             dict(page_key="profile", title_en="Our Profile", title_tet="Ami-nia Perfil", title_pt="O Nosso Perfil"),
             dict(page_key="vision_mission", title_en="Vision & Mission", title_tet="Vizaun & Misaun", title_pt="Visão e Missão"),
@@ -174,12 +180,34 @@ class Command(BaseCommand):
         ]
         for page in pages:
             page_key = page.pop("page_key")
-            PageHeader.objects.update_or_create(page_key=page_key, defaults={**PLAIN_DEFAULTS, **page})
+            PageHeader.objects.update_or_create(page_key=page_key, defaults={**DEFAULTS, **page})
 
-        # Home's header only supplies the hero's background/overlay styling
-        # (see templates/public/home.html) — its title/subtitle stay unused,
-        # the tagline/about copy on SiteProfile already covers that slot.
-        PageHeader.objects.get_or_create(page_key="home", defaults=dict(overlay_opacity=0, text_color="#0E2A2B"))
+        # Home renders through the same {% page_header %} component
+        # (variant="home") as every other page — see templates/public/home.html.
+        # title_en is "<primary> | <accent>", split by the variant="home"
+        # rendering into the two-tone stacked brand title from the approved
+        # design (docs/design/home.png); everything else (motto, tagline,
+        # decorative art) is identical to every other page's header.
+        home, _ = PageHeader.objects.update_or_create(
+            page_key="home",
+            defaults=dict(
+                title_en="TIMOR | DIAGNOSTIC CENTER",
+                title_tet="TIMOR | DIAGNOSTIC CENTER",
+                title_pt="TIMOR | DIAGNOSTIC CENTER",
+                motto_en="Saúde diak, ba moris diak", motto_tet="Saúde diak, ba moris diak", motto_pt="Saúde diak, ba moris diak",
+                tagline_en="Good health for a good life", tagline_tet="Good health for a good life", tagline_pt="Good health for a good life",
+                overlay_opacity=40, text_color="",
+            ),
+        )
+        # Seeds the decorative panel's default image only if nothing has
+        # been uploaded yet (never overwrites a staff-chosen image on
+        # re-run) — reproduces today's CSS/SVG fallback look exactly, so
+        # Home's approved appearance holds while background_image becomes
+        # a real, dashboard-editable field instead of a hardcoded asset.
+        if not home.background_image:
+            asset_path = os.path.join(os.path.dirname(__file__), "seed_assets", "page_header_default_bg.png")
+            with open(asset_path, "rb") as f:
+                home.background_image.save("page_header_default_bg.png", File(f), save=True)
 
         self.stdout.write("Page headers: 9 pages seeded with their current look (customize via Dashboard → Page Headers)")
 

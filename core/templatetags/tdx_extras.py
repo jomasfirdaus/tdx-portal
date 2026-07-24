@@ -22,6 +22,12 @@ _PAGE_HEADER_BREADCRUMB_KEYS = {
     "appointments": "nav.appointment",
 }
 
+# Fallback text for a PageHeader row that hasn't set motto/tagline yet (or
+# when there's no row at all) — keeps every header's appearance identical
+# to today's until staff override it via Dashboard -> Page Headers.
+_DEFAULT_MOTTO = "Saúde diak, ba moris diak"
+_DEFAULT_TAGLINE = "Good health for a good life"
+
 # Small, hand-written icon set (simple geometric strokes) so the project has
 # zero dependency on an external icon font/CDN — keeps the CSP locked to
 # 'self' and avoids a third-party supply-chain dependency for something this
@@ -123,13 +129,40 @@ def get_page_header(context, page_key):
     return header if (header and header.is_active) else None
 
 
+@register.simple_tag(takes_context=True)
+def header_motto(context, header):
+    """{% header_motto header %} — same admin-managed motto line the
+    {% page_header %} banner shows, for pages that render bespoke markup
+    around {% get_page_header %} instead (e.g. news/program/gallery detail)."""
+    lang = context.get("LANGUAGE", "en")
+    return (translate_field(header, "motto", lang) if header else "") or _DEFAULT_MOTTO
+
+
+@register.simple_tag(takes_context=True)
+def header_tagline(context, header):
+    """{% header_tagline header %} — the admin-managed tagline counterpart to {% header_motto %}."""
+    lang = context.get("LANGUAGE", "en")
+    return (translate_field(header, "tagline", lang) if header else "") or _DEFAULT_TAGLINE
+
+
+@register.filter
+def split(value, delimiter):
+    """{{ "TIMOR | DIAGNOSTIC CENTER"|split:" | " }} -> ["TIMOR", "DIAGNOSTIC CENTER"].
+    Used by the "home" page_header variant to style a title as two stacked
+    lines without hardcoding any organization-specific text in code — the
+    split point is just whatever the admin typed into the title field."""
+    return value.split(delimiter)
+
+
 @register.inclusion_tag("partials/page_header.html", takes_context=True)
-def page_header(context, page_key, title_override=None, breadcrumb_extra=None):
+def page_header(context, page_key, title_override=None, breadcrumb_extra=None, variant="standard"):
     """
-    Full banner: {% page_header "profile" %}. Used by every public page that
-    doesn't need extra per-item content in its header — the reusable
-    component every such page consumes, so none of them hardcode their own
-    title, background, or colors.
+    Full banner: {% page_header "profile" %}. Used by every public page —
+    including Home, via {% page_header "home" variant="home" %} — so no
+    page hardcodes its own title, background, or colors. "variant" only
+    changes which title layout the shared component renders (single line,
+    or "home"'s two-tone stacked brand title); everything else (logo,
+    motto, tagline, decorative art) is identical across variants.
     """
     lang = context.get("LANGUAGE", "en")
     header = get_page_header(context, page_key)
@@ -138,6 +171,8 @@ def page_header(context, page_key, title_override=None, breadcrumb_extra=None):
         _PAGE_HEADER_BREADCRUMB_KEYS.get(page_key, ""), lang
     )
     subtitle = translate_field(header, "subtitle", lang) if header else ""
+    motto = (translate_field(header, "motto", lang) if header else "") or _DEFAULT_MOTTO
+    tagline = (translate_field(header, "tagline", lang) if header else "") or _DEFAULT_TAGLINE
 
     breadcrumb_label = translate(_PAGE_HEADER_BREADCRUMB_KEYS.get(page_key, ""), lang)
     breadcrumb = f"{breadcrumb_label} / {breadcrumb_extra}" if breadcrumb_extra else breadcrumb_label
@@ -147,8 +182,11 @@ def page_header(context, page_key, title_override=None, breadcrumb_extra=None):
         "header": header,
         "title": title,
         "subtitle": subtitle,
+        "motto": motto,
+        "tagline": tagline,
         "breadcrumb": breadcrumb,
         "show_breadcrumb": header.show_breadcrumb if header else True,
+        "variant": variant,
     }
 
 
