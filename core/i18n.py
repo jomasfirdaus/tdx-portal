@@ -131,7 +131,6 @@ STRINGS = {
     "location.get_directions": {"en": "Get Directions", "tet": "Hetan Direksaun", "pt": "Obter Direções"},
     "location.view_map": {"en": "View on map", "tet": "Haree iha mapa", "pt": "Ver no mapa"},
 
-    "footer.motto": {"en": "Good health for a good life", "tet": "Saúde diak, ba moris diak", "pt": "Boa saúde para uma vida melhor"},
     "footer.rights": {"en": "All rights reserved.", "tet": "Direitu hotu rezerva.", "pt": "Todos os direitos reservados."},
     "footer.quicklinks": {"en": "Quick Links", "tet": "Ligasaun Lalais", "pt": "Links Rápidos"},
     "footer.follow": {"en": "Follow us", "tet": "Tuir ami", "pt": "Siga-nos"},

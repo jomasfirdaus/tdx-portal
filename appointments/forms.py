@@ -4,7 +4,7 @@ from django.utils import timezone
 
 from core.forms import AntiSpamFormMixin
 from core.i18n import DEFAULT_LANGUAGE, t
-from core.models import ServiceArea
+from core.models import Location, ServiceArea
 from core.translation import tr as translate_field
 
 from .models import AppointmentRequest, AppointmentSlot
@@ -65,6 +65,8 @@ class AppointmentForm(AntiSpamFormMixin, forms.ModelForm):
             f"{slot.get_day_of_week_display()} {slot.start_time.strftime('%H:%M')}-{slot.end_time.strftime('%H:%M')}"
         )
         self.fields["location"].required = False
+        self.fields["location"].queryset = Location.objects.filter(is_active=True)
+        self.fields["location"].label_from_instance = lambda loc: translate_field(loc, "name", lang)
         self.fields["service_area"].label_from_instance = lambda obj: translate_field(obj, "name", lang)
         self.fields["appointment_date"].widget.attrs["min"] = timezone.localdate().isoformat()
         self.fields["slot"].widget.attrs["aria-describedby"] = "slot-hint"

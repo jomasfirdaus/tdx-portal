@@ -58,5 +58,5 @@ def contact_view(request):
         import time
         form = ContactForm(initial={"ts": time.time()}, lang=lang)
 
-    locations = Location.objects.filter(is_active=True)
+    locations = Location.objects.filter(is_active=True, show_on_map=True)
     return render(request, "public/contact.html", {"form": form, "locations": locations})

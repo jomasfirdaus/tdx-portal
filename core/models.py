@@ -97,12 +97,18 @@ class Location(TimeStampedModel):
     name_tet = models.CharField(max_length=150, blank=True)
     name_pt = models.CharField(max_length=150, blank=True)
 
-    address_en = models.CharField(max_length=255)
+    address_en = models.CharField(max_length=255, blank=True)
     address_tet = models.CharField(max_length=255, blank=True)
     address_pt = models.CharField(max_length=255, blank=True)
 
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, help_text="e.g. -8.556856")
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, help_text="e.g. 125.560314")
+    latitude = models.DecimalField(
+        max_digits=9, decimal_places=6, blank=True, null=True,
+        help_text="e.g. -8.556856. Leave blank for a non-physical option (e.g. Home Collection).",
+    )
+    longitude = models.DecimalField(
+        max_digits=9, decimal_places=6, blank=True, null=True,
+        help_text="e.g. 125.560314. Leave blank for a non-physical option (e.g. Home Collection).",
+    )
     google_maps_url = models.URLField(
         blank=True,
         help_text="Optional 'Get Directions' link. If empty, a directions link is built from the coordinates.",
@@ -116,6 +122,11 @@ class Location(TimeStampedModel):
     opening_hours_pt = models.TextField(blank=True)
 
     is_primary = models.BooleanField(default=False, db_index=True, help_text="Main office highlighted first.")
+    show_on_map = models.BooleanField(
+        default=True, db_index=True,
+        help_text="Show on the homepage/contact page map. Uncheck for non-physical options "
+        "(e.g. Home Collection) that should still be selectable when booking an appointment.",
+    )
     order = models.PositiveSmallIntegerField(default=0, db_index=True)
     is_active = models.BooleanField(default=True, db_index=True)
 
@@ -130,10 +141,13 @@ class Location(TimeStampedModel):
     def directions_url(self):
         """External directions link: admin-supplied URL wins, otherwise an
         OpenStreetMap directions link built from the stored coordinates (no
-        API key required)."""
+        API key required). Returns "" when neither is available (e.g. a
+        non-physical option like Home Collection)."""
         if self.google_maps_url:
             return self.google_maps_url
-        return f"https://www.openstreetmap.org/directions?to={self.latitude}%2C{self.longitude}"
+        if self.latitude is not None and self.longitude is not None:
+            return f"https://www.openstreetmap.org/directions?to={self.latitude}%2C{self.longitude}"
+        return ""
 
 
 class ServiceArea(TimeStampedModel):

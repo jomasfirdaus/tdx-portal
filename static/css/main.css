@@ -284,7 +284,6 @@ ul, ol { padding-left: 1.2em; color: var(--ink-soft); }
 .site-footer a:hover { color: #fff; }
 .footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 40px; }
 .footer-brand p { color: #A9C6C0; font-size: 0.9rem; }
-.footer-motto { font-style: italic; color: #fff; font-weight: 600; }
 .footer-links { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 9px; }
 .footer-bottom { border-top: 1px solid rgba(255,255,255,0.12); margin-top: 40px; padding-top: 22px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; font-size: 0.82rem; color: #9FBDB6; }
 .social-row { display: flex; gap: 10px; }

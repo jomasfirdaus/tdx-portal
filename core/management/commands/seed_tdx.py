@@ -140,6 +140,21 @@ class Command(BaseCommand):
         )
         self.stdout.write(f"Location: {location} (update the coordinates/address via Dashboard \u2192 Locations)")
 
+        home_collection, _ = Location.objects.update_or_create(
+            name_en="Home Collection",
+            defaults=dict(
+                name_tet="Kolleta iha Uma",
+                name_pt="Recolha ao Domic\u00edlio",
+                phone="+670 000 0000",
+                email="info@tdx.tl",
+                is_primary=False,
+                show_on_map=False,
+                order=1,
+                is_active=True,
+            ),
+        )
+        self.stdout.write(f"Location: {home_collection} (selectable when booking, hidden from the map)")
+
     def seed_services(self):
         rows = [
             dict(
